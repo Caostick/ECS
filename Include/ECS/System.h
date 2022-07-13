@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Include/ECS/WorldView.h>
+#include <ECS/WorldView.h>
 
 namespace ecs {
 	class System {

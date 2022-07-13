@@ -1,7 +1,7 @@
-#include <ECS/Include/ECS/World.h>
-#include <ECS/Include/ECS/System.h>
-#include <ECS/Include/ECS/ThreadManager.h>
-#include <ECS/Source/Allocator.h>
+#include <ECS/World.h>
+#include <ECS/System.h>
+#include <ECS/ThreadManager.h>
+#include <ECS/Allocator.h>
 
 void ecs::World::Init(const ecs::ThreadManager* threadManager /*= nullptr*/) {
 	if (!threadManager) {
@@ -257,7 +257,7 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		entity.m_GroupIndex = group->GetIndex();
 		entity.m_LocalIndex = localIndex;
 
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 		// Construct new components
 		const ecs::Bitset addedLayout = layout.m_RequiredBits;
@@ -279,7 +279,7 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		auto& entity = tls.GetEntity(entityIdx);
 
 		// Fix entity what has been changed within group
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 		// Destruct removed components
 		const ecs::Bitset removedLayout = layout.m_State.m_Bits;
@@ -301,8 +301,8 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		entity.m_GroupIndex = 0;
 		entity.m_LocalIndex = 0;
 
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
-		DFAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
 
 	} else {
 		// If both layouts exist
@@ -315,7 +315,7 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		auto newGroup = GetGroup(layout.m_RequiredBits);
 		const auto newLocalEntityIndex = newGroup->AddEntity(entityHandle);
 
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 		
 		const ecs::Bitset mergedLayout = layout.m_RequiredBits & layout.m_State.m_Bits;
 		const ecs::Bitset newLayout = layout.m_RequiredBits;
@@ -352,7 +352,7 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		// @TODO: Make backreference check for each entity and store last operation
 
 		// Fix entity what has been changed within group
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 		const auto entityHandleToFix = group->RemoveEntity(entity.m_LocalIndex);
 		if (entityHandle != entityHandleToFix) {
@@ -365,8 +365,8 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		entity.m_GroupIndex = newGroup->GetIndex();
 		entity.m_LocalIndex = newLocalEntityIndex;
 
-		DFAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
-		DFAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
+		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		ECSAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
 	}
 
 	if (!m_TLS[threadIdx].IsMarkedForUpdate(entityIdx)) {

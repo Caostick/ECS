@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Memory/Memory.h>
+#include <ECS/Memory.h>
 
 template<typename T, typename ...TArgs>
 T& ecs::CommandBuffer::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args) {
@@ -32,7 +32,7 @@ T* ecs::CommandBuffer::AllocateAndConstructComponent(TArgs&&... args) {
 	uint8_t* data = AllocateComponentData(sizeof(T));
 
 	T* component = (T*)data;
-	df::Construct(component, std::forward<TArgs>(args)...);
+	ecs::Construct(component, std::forward<TArgs>(args)...);
 
 	return component;
 }

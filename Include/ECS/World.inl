@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ECS/Include/ECS/WorldView.h>
-#include <ECS/Include/ECS/ThreadManager.h>
-#include <ECS/Source/Allocator.h>
+#include <ECS/WorldView.h>
+#include <ECS/ThreadManager.h>
+#include <ECS/Allocator.h>
 
 template<typename TEntityType>
 auto ecs::World::Construct()->EntityViewConstructor<TEntityType, typename TEntityType::TypeList> {

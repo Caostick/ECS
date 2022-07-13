@@ -1,7 +1,7 @@
-#include <ECS/Source/Group.h>
-#include <ECS/Source/Component.h>
-#include <ECS/Source/Allocator.h>
-#include <ECS/Source/Assert.h>
+#include <ECS/Group.h>
+#include <ECS/Component.h>
+#include <ECS/Allocator.h>
+#include <ECS/Assert.h>
 
 ecs::Group::Group(const ecs::Bitset& bits, uint32_t groupIndex) : m_EntityTypeBits(bits)
 , m_GroupIndex(groupIndex)
@@ -15,7 +15,7 @@ ecs::Group::Group(const ecs::Bitset& bits, uint32_t groupIndex) : m_EntityTypeBi
 }
 
 ecs::Group::~Group() {
-	DFAssert(m_EntityCount == 0, "Leak! There are still entities exist!");
+	ECSAssert(m_EntityCount == 0, "Leak! There are still entities exist!");
 
 	for (auto* pageData : m_DataPages) {
 		ECSDelete[] pageData;

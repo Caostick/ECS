@@ -2,10 +2,10 @@
 
 #include <stdint.h>
 
-#include <ECS/Include/ECS/EntityHandle.h>
-#include <ECS/Source/Bitset.h>
-#include <ECS/Source/Vector.h>
-#include <ECS/Source/TypeList.h>
+#include <ECS/EntityHandle.h>
+#include <ECS/Bitset.h>
+#include <ECS/Vector.h>
+#include <ECS/TypeList.h>
 
 #if _DEBUG
 #include <stdio.h>

@@ -1,6 +1,6 @@
-#include <ECS/Source/CommandBuffer.h>
-#include <ECS/Source/Allocator.h>
-#include <ECS/Source/Assert.h>
+#include <ECS/CommandBuffer.h>
+#include <ECS/Allocator.h>
+#include <ECS/Assert.h>
 
 
 const ecs::Vector<ecs::Command>::iterator ecs::CommandBuffer::begin() {

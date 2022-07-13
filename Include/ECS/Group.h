@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Source/Common.h>
+#include <ECS/Common.h>
 
 namespace ecs {
 	struct Group {
@@ -38,4 +38,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/Group.inl>
+#include <ECS/Group.inl>

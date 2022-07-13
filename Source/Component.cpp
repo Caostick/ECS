@@ -1,5 +1,5 @@
-#include <ECS/Source/Component.h>
-#include <ECS/Source/Allocator.h>
+#include <ECS/Component.h>
+#include <ECS/Allocator.h>
 
 ecs::ComponentCounterType ecs::ComponentInfo::s_ComponentCount = 0;
 ecs::Bitset ecs::ComponentInfo::s_ComponentBitsInfo[ecs::MaxComponentCount] = {};

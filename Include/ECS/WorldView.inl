@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Source/TypeList.h>
+#include <ECS/TypeList.h>
 
 template<typename... Args>
 ecs::WorldView<Args...>::WorldView(ecs::World& world)

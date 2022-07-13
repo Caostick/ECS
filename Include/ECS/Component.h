@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Source/Common.h>
+#include <ECS/Common.h>
 
 namespace ecs {
 	struct ComponentInfo {
@@ -74,4 +74,4 @@ ecs::Bitset ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>:
 template<typename T>
 uint32_t ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::s_ComponentTypeSize = ecs::ComponentInfo::s_ComponentSizeInfo[ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetComponentId()];
 
-#include <ECS/Source/Component.inl>
+#include <ECS/Component.inl>

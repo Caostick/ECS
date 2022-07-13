@@ -1,4 +1,4 @@
-#include <ECS/Source/Common.h>
+#include <ECS/Common.h>
 
 uint32_t ecs::ToThreadIndex(EntityHandle handle) {
 	return handle & ((1 << ThreadIndexBits) - 1);

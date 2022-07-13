@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Debug/Assert.h>
+#include <ECS/Assert.h>
 
 
 template<typename T>
@@ -22,7 +22,7 @@ uint32_t ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::typ
 template<typename T>
 ecs::ComponentTypeId ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::GetComponentId() {
 	static ecs::ComponentTypeId id = ecs::ComponentInfo::s_ComponentCount++;
-	DFAssert(id < ecs::MaxComponentCount, "Increase max component count!");
+	ECSAssert(id < ecs::MaxComponentCount, "Increase max component count!");
 
 	ecs::ComponentInfo::s_ComponentAmountInfo[id] = 0;
 	ecs::ComponentInfo::s_ComponentSizeInfo[id] = 0;
@@ -68,7 +68,7 @@ uint32_t ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::ty
 template<typename T>
 ecs::ComponentTypeId ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetComponentId() {
 	static ecs::ComponentTypeId id = ecs::ComponentInfo::s_ComponentCount++;
-	DFAssert(id < ecs::MaxComponentCount, "Increase max component count!");
+	ECSAssert(id < ecs::MaxComponentCount, "Increase max component count!");
 
 	ecs::ComponentInfo::s_ComponentAmountInfo[id] = 0;
 	ecs::ComponentInfo::s_ComponentSizeInfo[id] = sizeof(T);

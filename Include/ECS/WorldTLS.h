@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ECS/Source/Common.h>
-#include <ECS/Source/Entity.h>
-#include <ECS/Source/CommandBuffer.h>
+#include <ECS/Common.h>
+#include <ECS/Entity.h>
+#include <ECS/CommandBuffer.h>
 
 namespace ecs {
 

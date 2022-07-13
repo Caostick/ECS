@@ -1,4 +1,4 @@
-#include <ECS/Source/WorldTLS.h>
+#include <ECS/WorldTLS.h>
 
 ecs::WorldTLS::WorldTLS() 
 	: m_EntityPoolSize(0)
@@ -36,14 +36,14 @@ bool ecs::WorldTLS::IsMarkedForUpdate(uint32_t entityIndex) const {
 }
 
 void ecs::WorldTLS::RequestComponentAttach(uint32_t entityIndex, uint32_t componentTypeId) {
-	DFAssert(m_Layouts[entityIndex].m_State.m_Bits[componentTypeId] == false, "Component already attached!");
+	ECSAssert(m_Layouts[entityIndex].m_State.m_Bits[componentTypeId] == false, "Component already attached!");
 
 	m_Layouts[entityIndex].m_RequiredBits[componentTypeId] = true;
 	m_Layouts[entityIndex].m_State.m_BitsJustAttached[componentTypeId] = true;
 }
 
 void ecs::WorldTLS::RequestComponentDetach(uint32_t entityIndex, uint32_t componentTypeId) {
-	DFAssert(m_Layouts[entityIndex].m_State.m_Bits[componentTypeId] == true, "Component already detached!");
+	ECSAssert(m_Layouts[entityIndex].m_State.m_Bits[componentTypeId] == true, "Component already detached!");
 
 	m_Layouts[entityIndex].m_RequiredBits[componentTypeId] = false;
 	m_Layouts[entityIndex].m_State.m_BitsJustDetached[componentTypeId] = true;

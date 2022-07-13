@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Include/ECS/World.h>
+#include <ECS/World.h>
 
 namespace ecs {
 	template<typename... ARGS>
@@ -30,4 +30,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/WorldView.inl>
+#include <ECS/WorldView.inl>

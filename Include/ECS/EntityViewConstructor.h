@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ECS/Include/ECS/World.h>
-#include <ECS/Include/ECS/EntityView.h>
-#include <ECS/Source/Common.h>
-#include <ECS/Source/Entity.h>
+#include <ECS/World.h>
+#include <ECS/EntityView.h>
+#include <ECS/Common.h>
+#include <ECS/Entity.h>
 
 namespace ecs {
 	class World;
@@ -44,4 +44,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/EntityViewConstructor.inl>
+#include <ECS/EntityViewConstructor.inl>

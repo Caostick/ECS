@@ -1,13 +1,13 @@
 #pragma once
 
-#include <ECS/Include/ECS/EntityView.h>
+#include <ECS/EntityView.h>
 
-#include <ECS/Source/Common.h>
-#include <ECS/Source/Component.h>
-#include <ECS/Source/Entity.h>
-#include <ECS/Source/EntityViewConstructor.h>
-#include <ECS/Source/Group.h>
-#include <ECS/Source/WorldTLS.h>
+#include <ECS/Common.h>
+#include <ECS/Component.h>
+#include <ECS/Entity.h>
+#include <ECS/EntityViewConstructor.h>
+#include <ECS/Group.h>
+#include <ECS/WorldTLS.h>
 
 namespace ecs {
 	class System;
@@ -91,4 +91,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/World.inl>
+#include <ECS/World.inl>

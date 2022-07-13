@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ECS/Source/Common.h>
-#include <ECS/Source/Entity.h>
+#include <ECS/Common.h>
+#include <ECS/Entity.h>
 
 namespace ecs {
 
@@ -37,4 +37,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/EntityView.inl>
+#include <ECS/EntityView.inl>

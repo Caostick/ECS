@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ECS/Source/Common.h>
-#include <ECS/Source/Component.h>
-#include <ECS/Source/Group.h>
-#include <ECS/Include/ECS/WorldView.h>
-#include <ECS/Include/ECS/World.h>
+#include <ECS/Common.h>
+#include <ECS/Component.h>
+#include <ECS/Group.h>
+#include <ECS/WorldView.h>
+#include <ECS/World.h>
 
 namespace ecs {
 	template<typename TL = ecs::TypeList<>, typename WVTL = ecs::TypeList<>>
@@ -44,4 +44,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/Query.inl>
+#include <ECS/Query.inl>

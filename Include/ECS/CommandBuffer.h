@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ECS/Source/Component.h>
+#include <ECS/Component.h>
 
 namespace ecs {
 	enum class ECommandType : uint16_t {
@@ -50,4 +50,4 @@ namespace ecs {
 	};
 }
 
-#include <ECS/Source/CommandBuffer.inl>
+#include <ECS/CommandBuffer.inl>
