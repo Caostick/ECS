@@ -16,6 +16,8 @@ WIP:
 Initialization
 --------------
 ```
+#include <ECS/World.h>
+
 // Create ecs world instance
 ecs::World world;
 
