@@ -1,8 +1,10 @@
 cmake_minimum_required (VERSION 3.1)
 
 option(ECS_TESTS "Enable build of tests" ON)
+option(ECS_EXAMPLE "Enable build of example" ON)
 
 set(PROJECT_NAME ECS)
+set(CPP_VERSION 17)
 
 project(${PROJECT_NAME})
 
@@ -35,4 +37,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
 
 if(ECS_TESTS)
 add_subdirectory(Tests)
+endif()
+
+if(ECS_EXAMPLE)
+add_subdirectory(Example)
 endif()
