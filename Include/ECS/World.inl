@@ -2,7 +2,6 @@
 
 #include <ECS/WorldView.h>
 #include <ECS/ThreadManager.h>
-#include <ECS/Allocator.h>
 
 template<typename TEntityType>
 auto ecs::World::Construct()->EntityViewConstructor<TEntityType, typename TEntityType::TypeList> {
@@ -13,7 +12,7 @@ template<typename T, typename ...TArgs>
 void ecs::World::RegisterSystem(TArgs&&... args) {
 	ecs::SystemInfo systemInfo;
 
-	systemInfo.m_System = ECSNew T(std::forward<TArgs>(args)...);
+	systemInfo.m_System = new T(std::forward<TArgs>(args)...);
 	systemInfo.m_UpdateFunction = &UpdateSystem<T>;
 	m_SystemInfos.emplace_back(systemInfo);
 

@@ -2,14 +2,10 @@
 
 #include <type_traits>
 
-#if ECS_PRINT_TYPELIST
-#include <ostream>
-#endif
-
 namespace ecs {
 	namespace _private {
 		struct Void {};
-	} // _private
+	}
 }
 
 namespace ecs {
@@ -235,7 +231,7 @@ namespace ecs {
 		template<typename T, unsigned int IndexFrom, typename ...Args>
 		struct FindHelper<T, IndexFrom, TypeList<Args...>>
 			: std::integral_constant<unsigned int, std::is_same<typename TypeList<Args...>::Head, T>::value ? IndexFrom : IndexFrom + 1 + FindHelper<T, IndexFrom, typename TypeList<Args...>::Tail>::value> {};
-	} // _private
+	}
 
 	struct Constants {
 		typedef std::integral_constant<unsigned int, UINT_MAX> npos;
@@ -287,7 +283,7 @@ namespace ecs {
 				typename SliceHelper<IndexBegin, IndexEnd - 1, TL>::type
 			>::type type;
 		};
-	} // _private
+	}
 
 	template<unsigned int IndexBegin, unsigned int IndexAfterEnd, typename TL>
 	struct Slice {};
@@ -315,44 +311,4 @@ namespace ecs {
 	public:
 		typedef typename Slice<Index, Length<TL>::value - 1, TL>::type type;
 	};
-
-#if ECS_PRINT_TYPELIST
-	// ==================================
-	// Print
-	// ==================================
-	std::ostream& operator<<(std::ostream& ostr, EmptyTypeList) {
-		ostr << "{}";
-		return ostr;
-	}
-
-	template<typename TL>
-	void PrintTypeListHelper(TL, std::ostream& ostr) {}
-
-	template<typename T>
-	void PrintTypeListHead(T, std::ostream& ostr) {
-		ostr << typeid(T).name();
-	}
-
-	template<typename ...Args>
-	void PrintTypeListHead(TypeList<Args...> tl, std::ostream& ostr) {
-		ostr << tl;
-	}
-
-	template<typename Head, typename ...Args>
-	void PrintTypeListHelper(TypeList<Head, Args...>, std::ostream& ostr) {
-		PrintTypeListHead(Head(), ostr);
-		if (!IsEmpty<TypeList<Args...>>::value) {
-			ostr << ' ';
-			PrintTypeListHelper<Args...>(TypeList<Args...>(), ostr);
-		}
-	}
-
-	template<typename ...Args>
-	std::ostream& operator<<(std::ostream& ostr, TypeList<Args...> tl) {
-		ostr << '{';
-		PrintTypeListHelper(tl, ostr);
-		ostr << '}';
-		return ostr;
-	}
-#endif
 }

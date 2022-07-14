@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ECS/EntityView.h>
-
 #include <ECS/Common.h>
 #include <ECS/Component.h>
 #include <ECS/Entity.h>

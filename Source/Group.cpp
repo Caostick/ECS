@@ -1,6 +1,5 @@
 #include <ECS/Group.h>
 #include <ECS/Component.h>
-#include <ECS/Allocator.h>
 #include <ECS/Assert.h>
 
 ecs::Group::Group(const ecs::Bitset& bits, uint32_t groupIndex) : m_EntityTypeBits(bits)
@@ -18,7 +17,7 @@ ecs::Group::~Group() {
 	ECSAssert(m_EntityCount == 0, "Leak! There are still entities exist!");
 
 	for (auto* pageData : m_DataPages) {
-		ECSDelete[] pageData;
+		delete [] pageData;
 	}
 	m_DataPages.clear();
 }
@@ -93,11 +92,11 @@ uint8_t* ecs::Group::GetComponentData(uint32_t localIndex, ecs::ComponentTypeId 
 }
 
 void ecs::Group::AddDataPage() {
-	uint8_t* pageData = ECSNew uint8_t[m_EntitySize * EntitiesPerGroupDataPage];
+	uint8_t* pageData = new uint8_t[m_EntitySize * EntitiesPerGroupDataPage];
 	m_DataPages.push_back(pageData);
 }
 
 void ecs::Group::RemoveDataPage() {
-	ECSDelete [] m_DataPages[m_DataPages.size() - 1];
+	delete [] m_DataPages[m_DataPages.size() - 1];
 	m_DataPages.pop_back();
 }

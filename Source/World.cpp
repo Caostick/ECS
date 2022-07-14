@@ -1,32 +1,31 @@
 #include <ECS/World.h>
 #include <ECS/System.h>
 #include <ECS/ThreadManager.h>
-#include <ECS/Allocator.h>
 
 void ecs::World::Init(const ecs::ThreadManager* threadManager /*= nullptr*/) {
 	if (!threadManager) {
-		m_DefaultThreadManager = ECSNew ecs::ThreadManager;
+		m_DefaultThreadManager = new ecs::ThreadManager;
 	}
 
 	m_ThreadManager = m_DefaultThreadManager;
 
 	m_TLS.resize(m_ThreadManager->GetThreadCount());
 
-	m_Groups.push_back(ECSNew ecs::Group(0, 0));
+	m_Groups.push_back(new ecs::Group(0, 0));
 }
 
 void ecs::World::Release() {
 	for (ecs::SystemInfo& systemInfo : m_SystemInfos) {
-		ECSDelete systemInfo.m_System;
+		delete systemInfo.m_System;
 	}
 	m_SystemInfos.clear();
 
 	for (ecs::Group* group : m_Groups) {
-		ECSDelete group;
+		delete group;
 	}
 	m_Groups.clear();
 
-	ECSDelete m_DefaultThreadManager;
+	delete m_DefaultThreadManager;
 	m_DefaultThreadManager = nullptr;
 	m_ThreadManager = nullptr;
 }
@@ -386,7 +385,7 @@ ecs::Group* ecs::World::GetGroup(const ecs::Bitset& typeBitmask) {
 
 	const uint32_t newGroupIndex = static_cast<uint32_t>(m_Groups.size());
 
-	ecs::Group* newGroup = ECSNew ecs::Group(typeBitmask, newGroupIndex);
+	ecs::Group* newGroup = new ecs::Group(typeBitmask, newGroupIndex);
 	m_Groups.push_back(newGroup);
 	return newGroup;
 }

@@ -1,5 +1,4 @@
 #include <ECS/CommandBuffer.h>
-#include <ECS/Allocator.h>
 #include <ECS/Assert.h>
 
 
@@ -13,12 +12,12 @@ const ecs::Vector<ecs::Command>::iterator ecs::CommandBuffer::end() {
 
 ecs::CommandBuffer::CommandBuffer()
 	: m_DataSize(0) {
-	m_Pages.push_back(ECSNew uint8_t[ecs::CommandBufferPageSize]);
+	m_Pages.push_back(new uint8_t[ecs::CommandBufferPageSize]);
 }
 
 ecs::CommandBuffer::~CommandBuffer() {
 	for (auto page : m_Pages) {
-		ECSDelete [] page;
+		delete [] page;
 	}
 }
 
@@ -53,7 +52,7 @@ uint8_t* ecs::CommandBuffer::AllocateComponentData(uint32_t size) {
 		m_DataSize += availablePageMemorySize;
 
 		if (pageIndex >= m_Pages.size()) {
-			dataPtr = ECSNew uint8_t[ecs::CommandBufferPageSize];
+			dataPtr = new uint8_t[ecs::CommandBufferPageSize];
 			m_Pages.push_back(dataPtr);
 		}
 	}
