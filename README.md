@@ -161,7 +161,7 @@ using MyEntity = ecs::EntityView<
   MyComponentB
 >;
 
-// Return entity view. Available only current frame, so don't trore it anywhere
+// Returns entity view. Available only current frame, so don't srore it anywhere
 auto e = world.Construct<MyEntity>()
   .Construct<MyComponentA>()
   .Construct<MyComponentB>(123);
