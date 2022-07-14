@@ -72,7 +72,7 @@ struct MyComponentA {
 };
 
 struct MyComponentB {
-  MyComponentB(var) : Var(var) {}
+  MyComponentB(int var) : Var(var) {}
   MyComponentB(MyComponentB&&) = default;
   MyComponentB& operator = (MyComponentB&&) = default;
 
