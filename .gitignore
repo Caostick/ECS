@@ -1,1 +1,6 @@
 build/
+ThirdParty/conan.lock
+ThirdParty/conanbuildinfo.cmake
+ThirdParty/conanbuildinfo.txt
+ThirdParty/conaninfo.txt
+ThirdParty/graph_info.json

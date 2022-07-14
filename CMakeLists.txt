@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.1)
 
+option(ECS_TESTS "Enable build of tests" ON)
+
 set(PROJECT_NAME ECS)
 
 project(${PROJECT_NAME})
@@ -30,3 +32,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CPP_VERSION})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+
+if(ECS_TESTS)
+add_subdirectory(Tests)
+endif()
