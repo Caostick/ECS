@@ -107,6 +107,9 @@ public:
 
 .cpp
 ```
+#include <MySystem.h>
+#include <ECS/Query.h>
+
 void MySystem::Update(WorldView& world, float dt) {
   using Query = ecs::Query<>
     ::Include<MyComponentA>
@@ -149,6 +152,8 @@ world.AttachComponent<MyComponentB>(e, 123);
 
 If you want to has access to created component data right after creation, you may use entity creation via EntityView
 ```
+#include <ECS/EntityView.h>
+
 using MyEntity = ecs::EntityView<
   MyComponentA,
   MyComponentB
