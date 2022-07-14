@@ -6,7 +6,7 @@
 #include <iostream>
 
 int main() {
-	constexpr float deltaTime = 1.0f / 16.0f;
+	constexpr float deltaTime = 1.0f / 60.0f;
 
 	// Initialization
 	ecs::World world;
