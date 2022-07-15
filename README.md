@@ -11,7 +11,6 @@ Features:
 WIP:
 - Support for shared libs (currently works with static linked app, needs component sorting for shared)
 - Task manager/scheduler for systems according component access mask
-- Add network support/replication
 
 Initialization
 --------------
