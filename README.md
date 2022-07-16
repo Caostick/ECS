@@ -140,7 +140,7 @@ For query available next access masks:
 Entity
 ---------------
 
-Entity is juct component container that has own handle/index. All components are stored in cache-friendly groups(buffers) according to entity layout(components bits)
+Entity is just component container that has own handle/index. All components are stored in cache-friendly groups(buffers) according to entity layout(components bits)
 
 Entity and component creation
 ```
