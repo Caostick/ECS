@@ -2,6 +2,8 @@
 Entity Component System
 -----------------------
 
+ECS from pet game project. Still needs to be polished, but interface is complete.
+
 Features:
 - Flexible
 - Easily expandable
