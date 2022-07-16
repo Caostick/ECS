@@ -11,7 +11,7 @@ Features:
 WIP:
 - Support for shared libs (currently works with static linked app, needs component sorting for shared).
 - Task manager/scheduler for systems according component access mask.
-- Global components(world context) with access mask. Instead of system dependency arguments, which can be thread-unsafe.
+- Global components(system context) with access mask. Instead of system dependency arguments, which can be thread-unsafe.
 
 Initialization
 --------------
