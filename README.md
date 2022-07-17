@@ -2,6 +2,8 @@
 Entity Component System
 -----------------------
 
+ECS from pet game project. Still needs to be polished, but interface is complete.
+
 Features:
 - Flexible
 - Easily expandable
@@ -9,9 +11,10 @@ Features:
 - Lockless safe multithreaded
 
 WIP:
-- Support for shared libs (currently works with static linked app, needs component sorting for shared)
-- Task manager/scheduler for systems according component access mask
-- Add network support/replication
+- Support for shared libs (currently works with static linked app, needs component sorting for shared).
+- Task manager/scheduler for systems according component access mask.
+- Global components(system context) with access mask. Instead of system dependency arguments, which can be thread-unsafe.
+- Static time queries, query - entity groups caching. Optimize entity iteration(remove vector building).
 
 Initialization
 --------------
@@ -139,7 +142,7 @@ For query available next access masks:
 Entity
 ---------------
 
-Entity is juct component container that has own handle/index. All components are stored in cache-friendly groups(buffers) according to entity layout(components bits)
+Entity is just component container that has own handle/index. All components are stored in cache-friendly groups(buffers) according to entity layout(components bits)
 
 Entity and component creation
 ```
