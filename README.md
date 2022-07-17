@@ -11,6 +11,7 @@ Features:
 - Lockless safe multithreaded
 
 WIP:
+- Remove component limit
 - Support for shared libs (currently works with static linked app, needs component sorting for shared).
 - Task manager/scheduler for systems according component access mask.
 - Global components(system context) with access mask. Instead of system dependency arguments, which can be thread-unsafe.
