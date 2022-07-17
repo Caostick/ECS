@@ -40,5 +40,5 @@ add_subdirectory(Tests)
 endif()
 
 if(ECS_EXAMPLE)
-add_subdirectory(Example)
+add_subdirectory(Examples)
 endif()

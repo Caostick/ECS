@@ -3,17 +3,14 @@
 #include <ECS/System.h>
 
 #include "TransformComponent.h"
+#include "TransformHistoryComponent.h"
 
-class TransformSystem : public ecs::System {
+class PositionHistorySystem : public ecs::System {
 public:
 	using WorldView = ecs::WorldView<
-		TransformComponent
+		const PositionComponent,
+		PositionHistoryComponent
 	>;
 
-	TransformSystem(int step);
-
 	void Update(WorldView& world, float dt);
-
-private:
-	int m_Step;
 };

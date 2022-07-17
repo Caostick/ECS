@@ -8,10 +8,10 @@ TransformSystem::TransformSystem(int step)
 
 void TransformSystem::Update(WorldView& world, [[maybe_unused]] float dt) {
 	using Query = ecs::Query<>
-		::Include<TransformComponent>;
+		::Include<PositionComponent>;
 
 	for (auto e : Query::Iterate(world)) {
-		auto& transformComponent = e.Get<TransformComponent>();
+		auto& transformComponent = e.Get<PositionComponent>();
 
 		transformComponent.Coord += m_Step;
 	}

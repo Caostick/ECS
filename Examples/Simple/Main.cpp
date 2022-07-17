@@ -13,12 +13,12 @@ int main() {
 
 	world.Init();
 	world.RegisterSystem<TransformSystem>(2);
-	world.RegisterSystem<TransformHistorySystem>();
+	world.RegisterSystem<PositionHistorySystem>();
 
 
 	auto e = world.CreateEntity();
-	world.AttachComponent<TransformComponent>(e, 10);
-	world.AttachComponent<TransformHistoryComponent>(e);
+	world.AttachComponent<PositionComponent>(e, 10);
+	world.AttachComponent<PositionHistoryComponent>(e);
 
 	// Update
 	for (int i = 0; i < 100; ++i) {
@@ -27,7 +27,7 @@ int main() {
 	}
 	world.FinishAllCommands();
 
-	std::cout << "Coord: " << world.GetComponent<TransformHistoryComponent>(e).Coord << '\n';
+	std::cout << "Coord: " << world.GetComponent<PositionHistoryComponent>(e).Coord << '\n';
 
 	// Deinitialization
 	world.Release();
