@@ -2,15 +2,31 @@
 #include <ECS/Component.h>
 #include <ECS/Assert.h>
 
+// 0 - Structure of arrays
+// 1 - Array of structures
+#define USE_ARRAY_OF_STRUCTURES_STORAGE 0
+
 ecs::Group::Group(const ecs::Bitset& bits, uint32_t groupIndex) : m_EntityTypeBits(bits)
 , m_GroupIndex(groupIndex)
 , m_EntityCount(0)
 , m_EntitySize(0) {
+#if USE_ARRAY_OF_STRUCTURES_STORAGE
 	for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
 		const bool bitIsSet = m_EntityTypeBits[i];
-		m_ComponentOffsets[i] = bitIsSet ? m_EntitySize : -1;
 		m_EntitySize += bitIsSet ? ecs::ComponentInfo::s_ComponentSizeInfo[i] : 0;
+
+		m_ComponentOffsets[i] = bitIsSet ? m_EntitySize : -1;
 	}
+#else
+	uint32_t componentPoolOffset = 0;
+	for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		const bool bitIsSet = m_EntityTypeBits[i];
+		m_EntitySize += bitIsSet ? ecs::ComponentInfo::s_ComponentSizeInfo[i] : 0;
+
+		m_ComponentOffsets[i] = bitIsSet ? componentPoolOffset : -1;
+		componentPoolOffset += bitIsSet ? (ecs::ComponentInfo::s_ComponentSizeInfo[i] * EntitiesPerGroupDataPage) : 0;
+}
+#endif
 }
 
 ecs::Group::~Group() {
@@ -82,6 +98,7 @@ ecs::EntityHandle ecs::Group::GetEntityBackReference(uint32_t localIndex) {
 }
 
 uint8_t* ecs::Group::GetComponentData(uint32_t localIndex, ecs::ComponentTypeId componentTypeId) {
+#if USE_ARRAY_OF_STRUCTURES_STORAGE
 	const auto pageIndex = localIndex / EntitiesPerGroupDataPage;
 	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
 
@@ -89,6 +106,15 @@ uint8_t* ecs::Group::GetComponentData(uint32_t localIndex, ecs::ComponentTypeId 
 	const uint32_t componentOffset = m_ComponentOffsets[componentTypeId];
 
 	return m_DataPages[pageIndex] + entityOffset + componentOffset;
+#else
+	const auto pageIndex = localIndex / EntitiesPerGroupDataPage;
+	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
+
+	const uint32_t componentPoolOffset = m_ComponentOffsets[componentTypeId];
+	const uint32_t componentOffset = pageLocalIndex * ecs::ComponentInfo::s_ComponentSizeInfo[componentTypeId];
+
+	return m_DataPages[pageIndex] + componentPoolOffset + componentOffset;
+#endif
 }
 
 void ecs::Group::AddDataPage() {
