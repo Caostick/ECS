@@ -84,6 +84,10 @@ struct MyComponentB {
 
   int Var;
 };
+
+// Component may not have data
+// In this case component will be considered as flag and used only for access bit
+struct MyComponentC {};
 ```
 
 Systems
