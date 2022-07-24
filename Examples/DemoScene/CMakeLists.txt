@@ -19,7 +19,6 @@ target_link_libraries(${PROJECT_NAME} CONAN_PKG::glew)
 target_link_libraries(${PROJECT_NAME} CONAN_PKG::glm)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CPP_VERSION})
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Examples")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")

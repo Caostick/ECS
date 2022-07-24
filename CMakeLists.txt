@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.1)
 
-option(ECS_TESTS "Enable build of tests" ON)
-option(ECS_EXAMPLE "Enable build of example" ON)
+option(ECS_TESTS "Enable build of tests" OFF)
+option(ECS_EXAMPLE "Enable build of example" OFF)
 
 set(PROJECT_NAME ECS)
 set(CPP_VERSION 17)
