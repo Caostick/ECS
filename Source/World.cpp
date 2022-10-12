@@ -37,7 +37,6 @@ auto ecs::World::CreateEntity() -> ecs::EntityHandle {
 }
 
 void ecs::World::DestroyEntity(ecs::EntityHandle entityHandle) {
-	const auto entityThreadIndex = ToThreadIndex(entityHandle);
 	auto& tls = m_TLS[m_ThreadManager->GetThreadIndex()];
 	auto& commandBuffer = tls.GetCommandBuffer();
 
@@ -166,7 +165,6 @@ void ecs::World::ExecuteCommands() {
 						auto group = m_Groups[groupIndex];
 						auto& entity = m_TLS[threadIdx].GetEntity(entityIdx);
 
-						const uint32_t compSize = ecs::ComponentInfo::s_ComponentSizeInfo[componentTypeId];
 						uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, componentTypeId);
 
 						ecs::ComponentInfo::s_MoveComponentFunc[componentTypeId](compPtr, cmd.m_ComponentDataPtr);
@@ -331,8 +329,6 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		// Move components from current group to new one
 		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
 			if (mergedLayout[i]) {
-				const uint32_t compSize = ecs::ComponentInfo::s_ComponentSizeInfo[i];
-
 				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ecs::ComponentTypeId(i));
 				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ecs::ComponentTypeId(i));
 
