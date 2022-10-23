@@ -49,7 +49,7 @@ world.ExecuteCommands();
 Deinitialization
 ----------------
 ```
-// Finish all commands which still can be stored in ecs command biffers
+// Finish all commands which still can be stored in ecs command buffers
 world.FinishAllCommands();
 
 world.Release();
@@ -130,7 +130,7 @@ void MySystem::Update(WorldView& world, float dt) {
     // Will be const, since we declared it as const in WorldView
     auto& componentA = e.Get<MyComponentA>();
     
-    // This component has both read/write acess
+    // This component has both read/write access
     auto& componentB = e.Get<MyComponentB>();
     
     componentB.Var = componentA.Var;
