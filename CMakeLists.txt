@@ -27,7 +27,7 @@ ECS_GATHER_FILES("Source" Source)
 get_property(ECS_SRC_LIST GLOBAL PROPERTY ECS_TMP_SRC_LIST)
 add_library (${PROJECT_NAME} STATIC ${ECS_SRC_LIST})
 
-include_directories(Include/)
+target_include_directories(${PROJECT_NAME} PUBLIC Include/)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "ECS")
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD ${CPP_VERSION})
