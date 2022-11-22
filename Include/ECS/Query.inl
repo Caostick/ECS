@@ -58,28 +58,32 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::Worl
 	// @TODO: Make proper iterator instead of filling and returning array
 	ecs::World& world = worldView;
 	for (const auto group : world.m_Groups) {
-		if (!group->IsEmpty()) {
-			const auto& groupBits = group->GetTypeBits();
-			const bool includeFits = ((groupBits & includeBits) == includeBits);
-			const bool excludeFits = ((~groupBits & excludeBits) == excludeBits);
+		if (group->IsEmpty()) {
+			continue;
+		}
 
-			if (includeFits && excludeFits) {
-				for (uint32_t i = 0; i < group->GetEntityCount(); ++i) {
-					const auto entityHandle = group->GetEntityBackReference(i);
+		const auto &groupBits = group->GetTypeBits();
+		const bool includeFits = ((groupBits & includeBits) == includeBits);
+		const bool excludeFits = ((~groupBits & excludeBits) == excludeBits);
 
-					const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-					const auto entityIdx = ecs::ToEntityIndex(entityHandle);
-					auto& tls = world.m_TLS[threadIdx];
-					auto& layout = tls.GetEntityLayout(entityIdx);
+		if (!(includeFits && excludeFits)) {
+			continue;
+		}
 
-					const bool attachedFits = ((layout.m_State.m_BitsJustAttached & addedBits) == addedBits);
-					const bool detachedFits = ((layout.m_State.m_BitsJustDetached & removedBits) == removedBits);
-					const bool detachedNotIncludedFits = (layout.m_State.m_BitsJustDetached & includeBits).none();
+		for (uint32_t i = 0; i < group->GetEntityCount(); ++i) {
+			const auto entityHandle = group->GetEntityBackReference(i);
 
-					if (attachedFits && detachedFits && detachedNotIncludedFits) {
-						results.emplace_back(ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>(group, i));
-					}
-				}
+			const auto threadIdx = ecs::ToThreadIndex(entityHandle);
+			const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+			auto &tls = world.m_TLS[threadIdx];
+			auto &layout = tls.GetEntityLayout(entityIdx);
+
+			const bool attachedFits = ((layout.m_State.m_BitsJustAttached & addedBits) == addedBits);
+			const bool detachedFits = ((layout.m_State.m_BitsJustDetached & removedBits) == removedBits);
+			const bool detachedNotIncludedFits = (layout.m_State.m_BitsJustDetached & includeBits).none();
+
+			if (attachedFits && detachedFits && detachedNotIncludedFits) {
+				results.emplace_back(ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>(group, i));
 			}
 		}
 	}
