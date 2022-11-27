@@ -74,7 +74,7 @@ bool ecs::World::IsRemoved(ecs::EntityHandle entityHandle) const {
 
 template<typename T>
 void ecs::World::UpdateSystem(ecs::World& world, ecs::System& system, float deltaTime) {
-	T::WorldView worldView = T::WorldView(world);
+	typename T::WorldView worldView = typename T::WorldView(world);
 
 	T& exactSystem = (T&)system;
 

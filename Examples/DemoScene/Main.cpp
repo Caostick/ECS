@@ -59,9 +59,6 @@ void InitEntities(ecs::World& world) {
 
 	// Create triangles
 	for (int i = 0; i < 5; ++i) {
-		const float x = RndRange(DomainMinX, DomainMaxX);
-		const float y = RndRange(DomainMinY, DomainMaxY);
-
 		auto e = world.Construct<TriangleEntity>()
 			.Construct<TriangleComponent>(RndRange(1.0f, 20.0f))
 			.Construct<PositionComponent>(glm::vec2(RndRange(DomainMinX, DomainMaxX), RndRange(DomainMinY + 1.0f, DomainMinY + 5.0f)))

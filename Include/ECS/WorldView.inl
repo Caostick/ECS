@@ -32,7 +32,7 @@ void ecs::WorldView<Args...>::DetachComponent(ecs::EntityHandle entityHandle) {
 template<typename... Args>
 template<typename T>
 auto ecs::WorldView<Args...>::GetComponent(ecs::EntityHandle entityHandle)->T& {
-	static_assert(df::Contains<T, df::TypeList<Args...>>::value, "WorldView doesn't contain component!");
+	static_assert(ecs::Contains<T, ecs::TypeList<Args...>>::value, "WorldView doesn't contain component!");
 
 	return m_World.GetComponent<T>(entityHandle);
 }

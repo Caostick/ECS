@@ -91,9 +91,10 @@ ecs::ComponentTypeId ecs::Component<T, typename std::enable_if<!std::is_empty<T>
 			T* dstComp = reinterpret_cast<T*>(dst);
 
 			new (dstComp) T(std::move(*srcComp));
-		} else {
-			static_assert(false, "No appropriate constructor for component!");
 		}
+
+		constexpr bool isValidType = std::is_constructible_v<T> || std::is_move_constructible_v<T>;
+		static_assert(isValidType, "No appropriate constructor for component!");
 	};
 
 	ecs::ComponentInfo::s_DestructComponentFunc[id] = [](void* comp) {

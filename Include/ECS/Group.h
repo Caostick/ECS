@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ECS/Common.h>
+#include <ECS/Component.h>
 
 namespace ecs {
 	struct Group {
