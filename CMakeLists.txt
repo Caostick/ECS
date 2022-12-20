@@ -4,13 +4,13 @@ option(ECS_TESTS "Enable build of tests" OFF)
 option(ECS_EXAMPLE "Enable build of example" OFF)
 
 set(PROJECT_NAME ECS)
-set(CPP_VERSION 17)
+set(CPP_VERSION 20)
 
 project(${PROJECT_NAME})
 
 set_property(GLOBAL PROPERTY ECS_TMP_SRC_LIST)
 function(ECS_GATHER_FILES DIRNAME DIR)
-	FILE(GLOB ECS_TMP_FILES ../${PROJECT_NAME}/${DIR}/*.h ../${PROJECT_NAME}/${DIR}/*.cpp)
+	FILE(GLOB ECS_TMP_FILES ../${PROJECT_NAME}/${DIR}/*.h ../${PROJECT_NAME}/${DIR}/*.cpp ../${PROJECT_NAME}/${DIR}/*.inl)
 	source_group(${DIRNAME} FILES ${ECS_TMP_FILES})
 	get_property(ECS_LOCAL_SRC_LIST GLOBAL PROPERTY ECS_TMP_SRC_LIST)	
 	set_property(GLOBAL PROPERTY ECS_TMP_SRC_LIST ${ECS_LOCAL_SRC_LIST} ${ECS_TMP_FILES})

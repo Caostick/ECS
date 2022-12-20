@@ -3,11 +3,6 @@
 #include <ECS/WorldView.h>
 #include <ECS/ThreadManager.h>
 
-template<typename TEntityType>
-auto ecs::World::Construct()->EntityViewConstructor<TEntityType, typename TEntityType::TypeList> {
-	return EntityViewConstructor<TEntityType, typename TEntityType::TypeList>(*this, CreateEntity());
-}
-
 template<typename T, typename ...TArgs>
 void ecs::World::RegisterSystem(TArgs&&... args) {
 	ecs::SystemInfo systemInfo;

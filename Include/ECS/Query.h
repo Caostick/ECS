@@ -40,7 +40,7 @@ namespace ecs {
 		using QueryResultList = typename ecs::RemoveDuplicates<typename QRT2>::type;
 
 		template<typename... Args>
-		static auto Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>>;
+		static auto Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>>;
 	};
 }
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ECS/World.h>
-#include <ECS/EntityView.h>
 #include <ECS/Common.h>
 #include <ECS/Entity.h>
 
@@ -42,6 +40,9 @@ namespace ecs {
 		EntityHandle m_EntityHandle;
 		ComponentArray<typename TEntityType::TypeList> m_Components;
 	};
+
+	template<typename TEntityType>
+	auto Construct(World& world) -> EntityViewConstructor<TEntityType, typename TEntityType::TypeList>;
 }
 
 #include <ECS/EntityViewConstructor.inl>

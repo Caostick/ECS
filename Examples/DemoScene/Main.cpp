@@ -1,4 +1,5 @@
 #include <ECS/World.h>
+#include <ECS/EntityViewConstructor.h>
 
 #include "PointSimulationSystem.h"
 #include "RectangleSimulationSystem.h"
@@ -52,14 +53,14 @@ void InitEntities(ecs::World& world) {
 		const float x = RndRange(DomainMinX, DomainMaxX);
 		const float y = RndRange(DomainMinY, DomainMaxY);
 
-		auto e = world.Construct<PointEntity>()
+		auto e = ecs::Construct<PointEntity>(world)
 			.Construct<PointComponent>(RndRange(1.0f, 5.0f))
 			.Construct<PositionComponent>(glm::vec2(x, y));
 	}
 
 	// Create triangles
 	for (int i = 0; i < 5; ++i) {
-		auto e = world.Construct<TriangleEntity>()
+		auto e = ecs::Construct<TriangleEntity>(world)
 			.Construct<TriangleComponent>(RndRange(1.0f, 20.0f))
 			.Construct<PositionComponent>(glm::vec2(RndRange(DomainMinX, DomainMaxX), RndRange(DomainMinY + 1.0f, DomainMinY + 5.0f)))
 			.Construct<PositionHistoryComponent>();

@@ -41,7 +41,7 @@ ecs::QueryResult<TL, WVTL>::operator ecs::EntityHandle () const {
 
 template<typename TL_INCLUDE /*= ecs::TypeList<>*/, typename TL_EXCLUDE /*= ecs::TypeList<>*/, typename TL_ADDED /*= ecs::TypeList<>*/, typename TL_REMOVED /*= ecs::TypeList<>*/>
 template<typename... Args>
-auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> {
+auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> {
 	using WorldViewTypeList = typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type;
 
 	static_assert(ecs::ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
@@ -53,7 +53,7 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::Worl
 	const ecs::Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
 	const ecs::Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
 
-	ecs::Vector<ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> results;
+	ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> results;
 
 	// @TODO: Make proper iterator instead of filling and returning array
 	ecs::World& world = worldView;
@@ -83,7 +83,7 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::Worl
 			const bool detachedNotIncludedFits = (layout.m_State.m_BitsJustDetached & includeBits).none();
 
 			if (attachedFits && detachedFits && detachedNotIncludedFits) {
-				results.emplace_back(ecs::QueryResult<typename QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>(group, i));
+				results.emplace_back(ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>(group, i));
 			}
 		}
 	}

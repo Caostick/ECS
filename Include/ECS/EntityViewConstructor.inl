@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ECS/World.h>
+
 template<typename TEntityType, typename TL>
 ecs::EntityViewConstructor<TEntityType, TL, typename std::enable_if_t<ecs::Length<TL>::value == 1>>::EntityViewConstructor(World& world, EntityHandle entityHandle)
 	: m_World(world)
@@ -53,4 +55,9 @@ auto ecs::EntityViewConstructor<TEntityType, TL, typename std::enable_if_t<ecs::
 	}
 
 	return EntityViewConstructor<TEntityType, typename ecs::RemoveAll<T, TL>::type>(m_World, m_EntityHandle, m_Components);
+}
+
+template<typename TEntityType>
+auto ecs::Construct(World& world)->EntityViewConstructor<TEntityType, typename TEntityType::TypeList> {
+	return EntityViewConstructor<TEntityType, typename TEntityType::TypeList>(world, world.CreateEntity());
 }

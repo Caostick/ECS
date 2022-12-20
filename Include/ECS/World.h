@@ -4,18 +4,16 @@
 #include <ECS/Common.h>
 #include <ECS/Component.h>
 #include <ECS/Entity.h>
-#include <ECS/EntityViewConstructor.h>
 #include <ECS/Group.h>
 #include <ECS/WorldTLS.h>
 
 namespace ecs {
 	class System;
-	class World;
 	class ThreadManager;
 }
 
 namespace ecs {
-	using SystemUpdateFunction = void(ecs::World& world, ecs::System& system, float deltaTime);
+	using SystemUpdateFunction = void(class World& world, System& system, float deltaTime);
 
 	struct SystemInfo {
 		SystemInfo() = default;
@@ -24,8 +22,8 @@ namespace ecs {
 		SystemInfo& operator = (const SystemInfo&) = default;
 		SystemInfo& operator = (SystemInfo&&) = default;
 
-		ecs::System* m_System = nullptr;
-		ecs::SystemUpdateFunction* m_UpdateFunction = nullptr;
+		System* m_System = nullptr;
+		SystemUpdateFunction* m_UpdateFunction = nullptr;
 	};
 
 	class World {
@@ -37,9 +35,6 @@ namespace ecs {
 
 		auto CreateEntity() -> ecs::EntityHandle;
 		void DestroyEntity(ecs::EntityHandle entityHandle);
-
-		template<typename TEntityType>
-		auto Construct()->EntityViewConstructor<TEntityType, typename TEntityType::TypeList>;
 
 		template<typename T, typename ...TArgs>
 		void RegisterSystem(TArgs&&... args);

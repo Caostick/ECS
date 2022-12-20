@@ -163,6 +163,7 @@ world.AttachComponent<MyComponentB>(e, 123);
 If you want to has access to created component data right after creation, you may use entity creation via EntityView
 ```
 #include <ECS/EntityView.h>
+#include <ECS/EntityViewConstructor.h>
 
 using MyEntity = ecs::EntityView<
   MyComponentA,
@@ -170,7 +171,7 @@ using MyEntity = ecs::EntityView<
 >;
 
 // Returns entity view. Available only current frame, so don't srore it anywhere
-auto e = world.Construct<MyEntity>()
+auto e = ecs::Construct<MyEntity>(world)
   .Construct<MyComponentA>()
   .Construct<MyComponentB>(123);
   
