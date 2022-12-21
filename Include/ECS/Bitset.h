@@ -2,7 +2,7 @@
 
 #include <bitset>
 
-namespace df {
+namespace ecs {
 	template<int NumBits>
-	using Bitset = std::bitset<NumBits>;
+	using TBitset = std::bitset<NumBits>;
 }

@@ -7,40 +7,40 @@
 #include <ECS/World.h>
 
 namespace ecs {
-	template<typename TL = ecs::TypeList<>, typename WVTL = ecs::TypeList<>>
+	template<typename TL = TypeList<>, typename WVTL = TypeList<>>
 	class QueryResult {
 	public:
-		QueryResult(ecs::Group* group, uint32_t entityLocalIndex);
+		QueryResult(Group* group, uint32_t entityLocalIndex);
 
 		template<typename T>
-		auto Get() -> typename std::conditional_t<ecs::Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>;
+		auto Get() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>;
 
-		operator ecs::EntityHandle() const;
+		operator EntityHandle() const;
 	private:
-		ecs::Group* m_Group;
+		Group* m_Group;
 		uint32_t m_EntityLocalIndex;
 	};
 
-	template<typename TL_INCLUDE = ecs::TypeList<>, typename TL_EXCLUDE = ecs::TypeList<>, typename TL_ADDED = ecs::TypeList<>, typename TL_REMOVED = ecs::TypeList<>>
+	template<typename TL_INCLUDE = TypeList<>, typename TL_EXCLUDE = TypeList<>, typename TL_ADDED = TypeList<>, typename TL_REMOVED = TypeList<>>
 	struct Query {
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
-		using Include = Query<typename ecs::Append<const T, TL_INCLUDE>::type, TL_EXCLUDE, TL_ADDED, TL_REMOVED>;
+		using Include = Query<typename Append<const T, TL_INCLUDE>::type, TL_EXCLUDE, TL_ADDED, TL_REMOVED>;
 
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
-		using Exclude = Query<TL_INCLUDE, typename ecs::Append<const T, TL_EXCLUDE>::type, TL_ADDED, TL_REMOVED>;
+		using Exclude = Query<TL_INCLUDE, typename Append<const T, TL_EXCLUDE>::type, TL_ADDED, TL_REMOVED>;
 
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
-		using Added = Query<TL_INCLUDE, TL_EXCLUDE, typename ecs::Append<const T, TL_ADDED>::type, TL_REMOVED>;
+		using Added = Query<TL_INCLUDE, TL_EXCLUDE, typename Append<const T, TL_ADDED>::type, TL_REMOVED>;
 
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
-		using Removed = Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, typename ecs::Append<const T, TL_REMOVED>::type>;
+		using Removed = Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, typename Append<const T, TL_REMOVED>::type>;
 
-		using QRT1 = typename ecs::Append<TL_ADDED, TL_REMOVED>::type;
-		using QRT2 = typename ecs::Append<TL_INCLUDE, typename QRT1>::type;
-		using QueryResultList = typename ecs::RemoveDuplicates<typename QRT2>::type;
+		using QRT1 = typename Append<TL_ADDED, TL_REMOVED>::type;
+		using QRT2 = typename Append<TL_INCLUDE, typename QRT1>::type;
+		using QueryResultList = typename RemoveDuplicates<typename QRT2>::type;
 
 		template<typename... Args>
-		static auto Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>>;
+		static auto Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>>;
 	};
 }
 

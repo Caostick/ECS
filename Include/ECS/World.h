@@ -30,58 +30,58 @@ namespace ecs {
 		template<typename, typename, typename, typename>
 		friend struct Query;
 	public:
-		void Init(const ecs::ThreadManager* threadManager = nullptr);
+		void Init(const ThreadManager* threadManager = nullptr);
 		void Release();
 
-		auto CreateEntity() -> ecs::EntityHandle;
-		void DestroyEntity(ecs::EntityHandle entityHandle);
+		auto CreateEntity() -> EntityHandle;
+		void DestroyEntity(EntityHandle entityHandle);
 
 		template<typename T, typename ...TArgs>
 		void RegisterSystem(TArgs&&... args);
 
 		template<typename T, typename ...TArgs>
-		auto AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args) -> T&;
+		auto AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T&;
 
 		template<typename T>
-		void DetachComponent(ecs::EntityHandle entityHandle);
+		void DetachComponent(EntityHandle entityHandle);
 
 		template<typename T>
-		T& GetComponent(ecs::EntityHandle entityHandle);
+		auto GetComponent(EntityHandle entityHandle) -> T&;
 
 		template<typename T>
-		bool IsAdded(ecs::EntityHandle entityHandle) const;
+		bool IsAdded(EntityHandle entityHandle) const;
 
 		template<typename T>
-		bool IsRemoved(ecs::EntityHandle entityHandle) const;
+		bool IsRemoved(EntityHandle entityHandle) const;
 
 		void Update(float dt);
 		void ExecuteCommands();
 		void FinishAllCommands();
 
 	public:
-		uint32_t GetGroupEntityCount(const ecs::Bitset& typeBitmask) const;
-		ecs::EntityHandle GetEntityBackreference(ecs::EntityHandle entityHandle) const;
+		auto GetGroupEntityCount(const Bitset& typeBitmask) const -> uint32_t;
+		auto GetEntityBackreference(EntityHandle entityHandle) const -> EntityHandle;
 
 	private:
 		template<typename T>
-		static void UpdateSystem(ecs::World& world, ecs::System& system, float deltaTime);
+		static void UpdateSystem(World& world, System& system, float deltaTime);
 
 	private:
-		void ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle);
+		void ExecuteChangeEntityLayout(EntityHandle entityHandle);
 
-		ecs::Group* GetGroup(const ecs::Bitset& typeBitmask);
+		auto GetGroup(const Bitset& typeBitmask) -> Group*;
 
-		const ecs::ThreadManager* m_ThreadManager = nullptr;
-		ecs::ThreadManager* m_DefaultThreadManager = nullptr;
+		const ThreadManager* m_ThreadManager = nullptr;
+		ThreadManager* m_DefaultThreadManager = nullptr;
 
-		ecs::Vector<ecs::WorldTLS> m_TLS;
-		ecs::Vector<ecs::Group*> m_Groups;
+		Vector<WorldTLS> m_TLS;
+		Vector<Group*> m_Groups;
 
-		ecs::Vector<ecs::EntityHandle> m_EntitiesToDestroy;
-		ecs::Vector<ecs::EntityHandle> m_EntitiesToChangeLayout;
-		ecs::Vector<ecs::EntityHandle> m_EntitiesToRefresh;
+		Vector<EntityHandle> m_EntitiesToDestroy;
+		Vector<EntityHandle> m_EntitiesToChangeLayout;
+		Vector<EntityHandle> m_EntitiesToRefresh;
 
-		ecs::Vector<ecs::SystemInfo> m_SystemInfos;
+		Vector<SystemInfo> m_SystemInfos;
 	};
 }
 

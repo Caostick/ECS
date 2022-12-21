@@ -5,7 +5,7 @@
 
 template<typename T, typename ...TArgs>
 void ecs::World::RegisterSystem(TArgs&&... args) {
-	ecs::SystemInfo systemInfo;
+	SystemInfo systemInfo;
 
 	systemInfo.m_System = new T(std::forward<TArgs>(args)...);
 	systemInfo.m_UpdateFunction = &UpdateSystem<T>;
@@ -15,7 +15,7 @@ void ecs::World::RegisterSystem(TArgs&&... args) {
 }
 
 template<typename T, typename ...TArgs>
-auto ecs::World::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args) -> T& {
+auto ecs::World::AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T& {
 	const auto entityThreadIndex = ToThreadIndex(entityHandle);
 	auto& tls = m_TLS[entityThreadIndex]; // m_ThreadManager->GetThreadIndex()
 	auto& commandBuffer = tls.GetCommandBuffer();
@@ -24,7 +24,7 @@ auto ecs::World::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args
 }
 
 template<typename T>
-void ecs::World::DetachComponent(ecs::EntityHandle entityHandle) {
+void ecs::World::DetachComponent(EntityHandle entityHandle) {
 	const auto entityThreadIndex = ToThreadIndex(entityHandle);
 	auto& tls = m_TLS[entityThreadIndex]; // m_ThreadManager->GetThreadIndex()
 	auto& commandBuffer = tls.GetCommandBuffer();
@@ -33,7 +33,7 @@ void ecs::World::DetachComponent(ecs::EntityHandle entityHandle) {
 }
 
 template<typename T>
-T& ecs::World::GetComponent(ecs::EntityHandle entityHandle) {
+auto ecs::World::GetComponent(EntityHandle entityHandle) -> T& {
 	const auto threadIndex = ToThreadIndex(entityHandle);
 	const auto entityIndex = ToEntityIndex(entityHandle);
 	auto& tls = m_TLS[threadIndex];
@@ -46,29 +46,29 @@ T& ecs::World::GetComponent(ecs::EntityHandle entityHandle) {
 }
 
 template<typename T>
-bool ecs::World::IsAdded(ecs::EntityHandle entityHandle) const {
+bool ecs::World::IsAdded(EntityHandle entityHandle) const {
 	const auto threadIndex = ToThreadIndex(entityHandle);
 	const auto entityIndex = ToEntityIndex(entityHandle);
 	auto& tls = m_TLS[threadIndex];
 
 	auto& layout = tls.GetEntityLayout(entityIndex);
 
-	return layout.m_State.m_BitsJustAttached[ecs::Component<std::remove_const_t<T>>::GetTypeId()];
+	return layout.m_State.m_BitsJustAttached[Component<std::remove_const_t<T>>::GetTypeId()];
 }
 
 template<typename T>
-bool ecs::World::IsRemoved(ecs::EntityHandle entityHandle) const {
+bool ecs::World::IsRemoved(EntityHandle entityHandle) const {
 	const auto threadIndex = ToThreadIndex(entityHandle);
 	const auto entityIndex = ToEntityIndex(entityHandle);
 	auto& tls = m_TLS[threadIndex];
 
 	auto& layout = tls.GetEntityLayout(entityIndex);
 
-	return layout.m_State.m_BitsJustDetached[ecs::Component<std::remove_const_t<T>>::GetTypeId()];
+	return layout.m_State.m_BitsJustDetached[Component<std::remove_const_t<T>>::GetTypeId()];
 }
 
 template<typename T>
-void ecs::World::UpdateSystem(ecs::World& world, ecs::System& system, float deltaTime) {
+void ecs::World::UpdateSystem(World& world, System& system, float deltaTime) {
 	typename T::WorldView worldView = typename T::WorldView(world);
 
 	T& exactSystem = (T&)system;

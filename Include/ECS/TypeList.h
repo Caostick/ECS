@@ -71,7 +71,7 @@ namespace ecs {
 
 	template<typename T, typename... Args>
 	struct ContainsList<T, TypeList<Args...>>
-		: std::integral_constant<bool, ecs::Contains<typename T::Head, TypeList<Args...>>::value && ContainsList<typename T::Tail, TypeList<Args...>>::value> {};
+		: std::integral_constant<bool, Contains<typename T::Head, TypeList<Args...>>::value && ContainsList<typename T::Tail, TypeList<Args...>>::value> {};
 
 	// ==================================
 	// Length

@@ -9,11 +9,11 @@ namespace ecs {
 	struct ComponentArray;
 
 	template<typename TL>
-	struct ComponentArray<TL, typename std::enable_if<ecs::IsEmpty<TL>::value>::type> {};
+	struct ComponentArray<TL, typename std::enable_if<IsEmpty<TL>::value>::type> {};
 
 	template<typename TL>
-	struct ComponentArray<TL, typename std::enable_if<!ecs::IsEmpty<TL>::value>::type> {
-		void* m_Pointers[ecs::Length<TL>::value];
+	struct ComponentArray<TL, typename std::enable_if<!IsEmpty<TL>::value>::type> {
+		void* m_Pointers[Length<TL>::value];
 	};
 
 	template<typename... TArgs>
@@ -21,7 +21,7 @@ namespace ecs {
 		template<typename, typename, typename>
 		friend class EntityViewConstructor;
 	public:
-		using TypeList = ecs::TypeList<TArgs...>;
+		using TypeList = TypeList<TArgs...>;
 
 		template<typename T>
 		auto Get() const -> T&;
@@ -29,7 +29,7 @@ namespace ecs {
 		operator EntityHandle() const;
 
 	private:
-		EntityView(ecs::EntityHandle handle, const ComponentArray<TypeList>& components);
+		EntityView(EntityHandle handle, const ComponentArray<TypeList>& components);
 
 	private:
 		EntityHandle m_EntityHandle;

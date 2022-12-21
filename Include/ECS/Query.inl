@@ -12,14 +12,13 @@ namespace {
 				using Tail = TL::Tail;
 
 				return ecs::Component<std::remove_const<Head>::type>::GetTypeBitmask() | ComponentTypeBits<Tail>::Bits();
-
 			}
 		}
 	};
 }
 
 template<typename TL, typename WVTL>
-ecs::QueryResult<TL, WVTL>::QueryResult(ecs::Group* group, uint32_t entityLocalIndex)
+ecs::QueryResult<TL, WVTL>::QueryResult(Group* group, uint32_t entityLocalIndex)
 	: m_Group(group)
 	, m_EntityLocalIndex(entityLocalIndex) {}
 
@@ -27,8 +26,8 @@ template<typename TL, typename WVTL>
 template<typename T>
 typename std::conditional_t<ecs::Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>
 ecs::QueryResult<TL, WVTL>::Get() {
+	static_assert(Contains<const T, TL>::value, "Component of type is inaccessible!");
 	static_assert(!std::is_const_v<T>, "Modifier const is deprecated!");
-	static_assert(ecs::Contains<const T, TL>::value, "Component of type is inaccessible!");
 	static_assert(!std::is_empty<T>::value, "Can't access empty component!");
 
 	return *m_Group->GetComponent<std::remove_const_t<T>>(m_EntityLocalIndex);
@@ -41,22 +40,22 @@ ecs::QueryResult<TL, WVTL>::operator ecs::EntityHandle () const {
 
 template<typename TL_INCLUDE /*= ecs::TypeList<>*/, typename TL_EXCLUDE /*= ecs::TypeList<>*/, typename TL_ADDED /*= ecs::TypeList<>*/, typename TL_REMOVED /*= ecs::TypeList<>*/>
 template<typename... Args>
-auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::WorldView<Args...>& worldView)->ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> {
-	using WorldViewTypeList = typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type;
+auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> {
+	using WorldViewTypeList = typename ExtendWithConst<TypeList<Args...>>::type;
 
-	static_assert(ecs::ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
-	static_assert(ecs::ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
-	static_assert(ecs::ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
+	static_assert(ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
+	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
+	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 
-	const ecs::Bitset addedBits = ComponentTypeBits<TL_ADDED>::Bits();
-	const ecs::Bitset removedBits = ComponentTypeBits<TL_REMOVED>::Bits();
-	const ecs::Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
-	const ecs::Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
+	const Bitset addedBits = ComponentTypeBits<TL_ADDED>::Bits();
+	const Bitset removedBits = ComponentTypeBits<TL_REMOVED>::Bits();
+	const Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
+	const Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
 
-	ecs::Vector<ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>> results;
+	Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> results;
 
 	// @TODO: Make proper iterator instead of filling and returning array
-	ecs::World& world = worldView;
+	World& world = worldView;
 	for (const auto group : world.m_Groups) {
 		if (group->IsEmpty()) {
 			continue;
@@ -73,8 +72,8 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::Worl
 		for (uint32_t i = 0; i < group->GetEntityCount(); ++i) {
 			const auto entityHandle = group->GetEntityBackReference(i);
 
-			const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-			const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+			const auto threadIdx = ToThreadIndex(entityHandle);
+			const auto entityIdx = ToEntityIndex(entityHandle);
 			auto &tls = world.m_TLS[threadIdx];
 			auto &layout = tls.GetEntityLayout(entityIdx);
 
@@ -83,7 +82,7 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(ecs::Worl
 			const bool detachedNotIncludedFits = (layout.m_State.m_BitsJustDetached & includeBits).none();
 
 			if (attachedFits && detachedFits && detachedNotIncludedFits) {
-				results.emplace_back(ecs::QueryResult<QueryResultList, typename ecs::ExtendWithConst<ecs::TypeList<Args...>>::type>(group, i));
+				results.emplace_back(QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>(group, i));
 			}
 		}
 	}

@@ -3,36 +3,36 @@
 #include <ECS/TypeList.h>
 
 template<typename... Args>
-ecs::WorldView<Args...>::WorldView(ecs::World& world)
+ecs::WorldView<Args...>::WorldView(World& world)
 	: m_World(world) {
 }
 
 template<typename... Args>
-auto ecs::WorldView<Args...>::CreateEntity()->ecs::EntityHandle {
+auto ecs::WorldView<Args...>::CreateEntity()->EntityHandle {
 	return m_World.CreateEntity();
 }
 
 template<typename... Args>
-void ecs::WorldView<Args...>::DestroyEntity(ecs::EntityHandle entityHandle) {
+void ecs::WorldView<Args...>::DestroyEntity(EntityHandle entityHandle) {
 	m_World.DestroyEntity(entityHandle);
 }
 
 template<typename... Args>
 template<typename T, typename ...TArgs>
-auto ecs::WorldView<Args...>::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args)->T& {
+auto ecs::WorldView<Args...>::AttachComponent(EntityHandle entityHandle, TArgs&&... args)->T& {
 	return m_World.AttachComponent<T>(entityHandle, std::forward<TArgs>(args)...);
 }
 
 template<typename... Args>
 template<typename T>
-void ecs::WorldView<Args...>::DetachComponent(ecs::EntityHandle entityHandle) {
+void ecs::WorldView<Args...>::DetachComponent(EntityHandle entityHandle) {
 	m_World.DetachComponent<T>(entityHandle);
 }
 
 template<typename... Args>
 template<typename T>
-auto ecs::WorldView<Args...>::GetComponent(ecs::EntityHandle entityHandle)->T& {
-	static_assert(ecs::Contains<T, ecs::TypeList<Args...>>::value, "WorldView doesn't contain component!");
+auto ecs::WorldView<Args...>::GetComponent(EntityHandle entityHandle)->T& {
+	static_assert(Contains<T, TypeList<Args...>>::value, "WorldView doesn't contain component!");
 
 	return m_World.GetComponent<T>(entityHandle);
 }

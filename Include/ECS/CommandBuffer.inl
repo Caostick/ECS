@@ -1,13 +1,13 @@
 #pragma once
 
 template<typename T, typename ...TArgs>
-T& ecs::CommandBuffer::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args) {
+auto ecs::CommandBuffer::AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T& {
 	T* compDataPtr = AllocateAndConstructComponent<T>(std::forward<TArgs>(args)...);
 
-	ecs::Command command;
+	Command command;
 	command.m_EntityHandle = entityHandle;
-	command.m_CommandType = ecs::ECommandType::AttachComponent;
-	command.m_ComponentTypeId = ecs::Component<T>::GetTypeId();
+	command.m_CommandType = ECommandType::AttachComponent;
+	command.m_ComponentTypeId = Component<T>::GetTypeId();
 	command.m_ComponentDataPtr = (uint8_t*)compDataPtr;
 
 	m_Commands.emplace_back(command);
@@ -16,17 +16,17 @@ T& ecs::CommandBuffer::AttachComponent(ecs::EntityHandle entityHandle, TArgs&&..
 }
 
 template <typename T>
-void ecs::CommandBuffer::DetachComponent(ecs::EntityHandle entityHandle) {
-	ecs::Command command;
+void ecs::CommandBuffer::DetachComponent(EntityHandle entityHandle) {
+	Command command;
 	command.m_EntityHandle = entityHandle;
-	command.m_CommandType = ecs::ECommandType::DetachComponent;
-	command.m_ComponentTypeId = ecs::Component<T>::GetTypeId();
+	command.m_CommandType = ECommandType::DetachComponent;
+	command.m_ComponentTypeId = Component<T>::GetTypeId();
 
 	m_Commands.emplace_back(command);
 }
 
 template<typename T, typename ...TArgs>
-T* ecs::CommandBuffer::AllocateAndConstructComponent(TArgs&&... args) {
+auto ecs::CommandBuffer::AllocateAndConstructComponent(TArgs&&... args) -> T* {
 	uint8_t* data = AllocateComponentData(sizeof(T));
 
 	T* component = (T*)data;

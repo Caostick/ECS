@@ -2,25 +2,25 @@
 #include <ECS/System.h>
 #include <ECS/ThreadManager.h>
 
-void ecs::World::Init(const ecs::ThreadManager* threadManager /*= nullptr*/) {
+void ecs::World::Init(const ThreadManager* threadManager /*= nullptr*/) {
 	if (!threadManager) {
-		m_DefaultThreadManager = new ecs::ThreadManager;
+		m_DefaultThreadManager = new ThreadManager;
 	}
 
 	m_ThreadManager = m_DefaultThreadManager;
 
 	m_TLS.resize(m_ThreadManager->GetThreadCount());
 
-	m_Groups.push_back(new ecs::Group(0, 0));
+	m_Groups.push_back(new Group(0, 0));
 }
 
 void ecs::World::Release() {
-	for (ecs::SystemInfo& systemInfo : m_SystemInfos) {
+	for (SystemInfo& systemInfo : m_SystemInfos) {
 		delete systemInfo.m_System;
 	}
 	m_SystemInfos.clear();
 
-	for (ecs::Group* group : m_Groups) {
+	for (Group* group : m_Groups) {
 		delete group;
 	}
 	m_Groups.clear();
@@ -30,13 +30,13 @@ void ecs::World::Release() {
 	m_ThreadManager = nullptr;
 }
 
-auto ecs::World::CreateEntity() -> ecs::EntityHandle {
+auto ecs::World::CreateEntity() -> EntityHandle {
 	const auto threadIndex = m_ThreadManager->GetThreadIndex();
 	auto& tls = m_TLS[m_ThreadManager->GetThreadIndex()];
 	return ToEntityHandle(threadIndex, tls.CreateEntity());
 }
 
-void ecs::World::DestroyEntity(ecs::EntityHandle entityHandle) {
+void ecs::World::DestroyEntity(EntityHandle entityHandle) {
 	auto& tls = m_TLS[m_ThreadManager->GetThreadIndex()];
 	auto& commandBuffer = tls.GetCommandBuffer();
 
@@ -44,7 +44,7 @@ void ecs::World::DestroyEntity(ecs::EntityHandle entityHandle) {
 }
 
 void ecs::World::Update(float dt) {
-	for (ecs::SystemInfo& systemInfo : m_SystemInfos) {
+	for (SystemInfo& systemInfo : m_SystemInfos) {
 		systemInfo.m_UpdateFunction(*this, *systemInfo.m_System, dt);
 	}
 }
@@ -52,8 +52,8 @@ void ecs::World::Update(float dt) {
 void ecs::World::ExecuteCommands() {
 	// 0: refresh added/removed entity data
 	for (const auto& entityHandle : m_EntitiesToRefresh) {
-		const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-		const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+		const auto threadIdx = ToThreadIndex(entityHandle);
+		const auto entityIdx = ToEntityIndex(entityHandle);
 		auto& tls = m_TLS[threadIdx];
 		auto& layout = tls.GetEntityLayout(entityIdx);
 
@@ -83,12 +83,12 @@ void ecs::World::ExecuteCommands() {
 			for (const auto cmd : commandBuffer) {
 
 				const auto entityHandle = cmd.m_EntityHandle;
-				const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-				const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+				const auto threadIdx = ToThreadIndex(entityHandle);
+				const auto entityIdx = ToEntityIndex(entityHandle);
 				const auto componentTypeId = cmd.m_ComponentTypeId;
 
 				switch (cmd.m_CommandType) {
-				case ecs::ECommandType::DestroyEntity:
+				case ECommandType::DestroyEntity:
 					//std::cout << "Destroy entity [" << entityHandle << "]\n";
 
 					if (!m_TLS[threadIdx].IsMarkedForDestroy(entityIdx)) {
@@ -102,8 +102,8 @@ void ecs::World::ExecuteCommands() {
 					}
 
 					break;
-				case ecs::ECommandType::AttachComponent:
-					//std::cout << "Attach component [" << ecs::ComponentInfo::s_ComponentNameInfo[componentTypeId] << "] to entity [" << entityHandle << "]\n";
+				case ECommandType::AttachComponent:
+					//std::cout << "Attach component [" << ComponentInfo::s_ComponentNameInfo[componentTypeId] << "] to entity [" << entityHandle << "]\n";
 
 					if (!m_TLS[threadIdx].IsMarkedForDestroy(entityIdx)) {
 						m_TLS[threadIdx].RequestComponentAttach(entityIdx, componentTypeId);
@@ -111,8 +111,8 @@ void ecs::World::ExecuteCommands() {
 					}
 
 					break;
-				case ecs::ECommandType::DetachComponent:
-					//std::cout << "Detach component [" << ecs::ComponentInfo::s_ComponentNameInfo[componentTypeId] << "] from entity [" << entityHandle << "]\n";
+				case ECommandType::DetachComponent:
+					//std::cout << "Detach component [" << ComponentInfo::s_ComponentNameInfo[componentTypeId] << "] from entity [" << entityHandle << "]\n";
 					if (!m_TLS[threadIdx].IsMarkedForDestroy(entityIdx)) {
 						m_TLS[threadIdx].RequestComponentDetach(entityIdx, componentTypeId);
 
@@ -133,8 +133,8 @@ void ecs::World::ExecuteCommands() {
 
 	// 2: execute layout changing(if it hasn't happened - current and required not the same), (if entity not marked for deletion)
 	for (const auto& entityHandle : m_EntitiesToChangeLayout) {
-		const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-		const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+		const auto threadIdx = ToThreadIndex(entityHandle);
+		const auto entityIdx = ToEntityIndex(entityHandle);
 		auto& tls = m_TLS[threadIdx];
 
 		if (!tls.IsMarkedForDestroy(entityIdx)) {
@@ -152,11 +152,11 @@ void ecs::World::ExecuteCommands() {
 		if (!commandBuffer.IsEmpty()) {
 			for (const auto cmd : commandBuffer) {
 
-				if (cmd.m_CommandType == ecs::ECommandType::AttachComponent) {
+				if (cmd.m_CommandType == ECommandType::AttachComponent) {
 
 					const auto entityHandle = cmd.m_EntityHandle;
-					const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-					const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+					const auto threadIdx = ToThreadIndex(entityHandle);
+					const auto entityIdx = ToEntityIndex(entityHandle);
 					const auto componentTypeId = cmd.m_ComponentTypeId;
 
 					const auto& layout = m_TLS[threadIdx].GetEntityLayout(entityIdx);
@@ -167,8 +167,8 @@ void ecs::World::ExecuteCommands() {
 
 						uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, componentTypeId);
 
-						ecs::ComponentInfo::s_MoveComponentFunc[componentTypeId](compPtr, cmd.m_ComponentDataPtr);
-						ecs::ComponentInfo::s_DestructComponentFunc[componentTypeId](cmd.m_ComponentDataPtr);
+						ComponentInfo::s_MoveComponentFunc[componentTypeId](compPtr, cmd.m_ComponentDataPtr);
+						ComponentInfo::s_DestructComponentFunc[componentTypeId](cmd.m_ComponentDataPtr);
 					}
 				}
 			}
@@ -177,8 +177,8 @@ void ecs::World::ExecuteCommands() {
 
 	// 4: remove entities
 	for (const auto& entityHandle : m_EntitiesToDestroy) {
-		const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-		const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+		const auto threadIdx = ToThreadIndex(entityHandle);
+		const auto entityIdx = ToEntityIndex(entityHandle);
 
 		auto& tls = m_TLS[threadIdx];
 		auto& layout = tls.GetEntityLayout(entityIdx);
@@ -217,7 +217,7 @@ void ecs::World::FinishAllCommands() {
 	}
 }
 
-uint32_t ecs::World::GetGroupEntityCount(const ecs::Bitset& typeBitmask) const {
+auto ecs::World::GetGroupEntityCount(const Bitset& typeBitmask) const -> uint32_t {
 	for (auto group : m_Groups) {
 		if (group->GetTypeBits() == typeBitmask) {
 			return group->GetEntityCount();
@@ -227,9 +227,9 @@ uint32_t ecs::World::GetGroupEntityCount(const ecs::Bitset& typeBitmask) const {
 	return 0;
 }
 
-ecs::EntityHandle ecs::World::GetEntityBackreference(ecs::EntityHandle entityHandle) const {
-	const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-	const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+auto ecs::World::GetEntityBackreference(EntityHandle entityHandle) const -> EntityHandle {
+	const auto threadIdx = ToThreadIndex(entityHandle);
+	const auto entityIdx = ToEntityIndex(entityHandle);
 
 	const auto& tls = m_TLS[threadIdx];
 	const auto& entity = tls.GetEntity(entityIdx);
@@ -237,9 +237,9 @@ ecs::EntityHandle ecs::World::GetEntityBackreference(ecs::EntityHandle entityHan
 	return entity.m_GroupIndex == 0 ? entityHandle : m_Groups[entity.m_GroupIndex]->GetEntityBackReference(entity.m_LocalIndex);
 }
 
-void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
-	const auto threadIdx = ecs::ToThreadIndex(entityHandle);
-	const auto entityIdx = ecs::ToEntityIndex(entityHandle);
+void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
+	const auto threadIdx = ToThreadIndex(entityHandle);
+	const auto entityIdx = ToEntityIndex(entityHandle);
 
 	auto& tls = m_TLS[threadIdx];
 	auto& layout = tls.GetEntityLayout(entityIdx);
@@ -257,11 +257,11 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 		// Construct new components
-		const ecs::Bitset addedLayout = layout.m_RequiredBits;
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		const Bitset addedLayout = layout.m_RequiredBits;
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (addedLayout[i]) {
-				uint8_t* newCompPtr = group->GetComponentData(localIndex, ecs::ComponentTypeId(i));
-				ecs::ComponentInfo::s_ConstructComponentFunc[ecs::ComponentTypeId(i)](newCompPtr);
+				uint8_t* newCompPtr = group->GetComponentData(localIndex, ComponentTypeId(i));
+				ComponentInfo::s_ConstructComponentFunc[ComponentTypeId(i)](newCompPtr);
 			}
 		}
 
@@ -279,18 +279,18 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 		// Destruct removed components
-		const ecs::Bitset removedLayout = layout.m_State.m_Bits;
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		const Bitset removedLayout = layout.m_State.m_Bits;
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (removedLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ecs::ComponentTypeId(i));
-				ecs::ComponentInfo::s_DestructComponentFunc[ecs::ComponentTypeId(i)](compPtr);
+				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				ComponentInfo::s_DestructComponentFunc[ComponentTypeId(i)](compPtr);
 			}
 		}
 
 		const auto entityHandleToFix = group->RemoveEntity(localIndex);
 		if (entityHandle != entityHandleToFix) {
-			const auto threadIdxToFix = ecs::ToThreadIndex(entityHandleToFix);
-			const auto entityIdxToFix = ecs::ToEntityIndex(entityHandleToFix);
+			const auto threadIdxToFix = ToThreadIndex(entityHandleToFix);
+			const auto entityIdxToFix = ToEntityIndex(entityHandleToFix);
 			auto& entityToFix = m_TLS[threadIdxToFix].GetEntity(entityIdxToFix);
 			entityToFix.m_LocalIndex = localIndex;
 		}
@@ -314,33 +314,33 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 		
-		const ecs::Bitset mergedLayout = layout.m_RequiredBits & layout.m_State.m_Bits;
-		const ecs::Bitset newLayout = layout.m_RequiredBits;
-		const ecs::Bitset oldLayout = layout.m_State.m_Bits;
+		const Bitset mergedLayout = layout.m_RequiredBits & layout.m_State.m_Bits;
+		const Bitset newLayout = layout.m_RequiredBits;
+		const Bitset oldLayout = layout.m_State.m_Bits;
 
 		// Construct new components
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (newLayout[i]) {
-				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ecs::ComponentTypeId(i));
-				ecs::ComponentInfo::s_ConstructComponentFunc[ecs::ComponentTypeId(i)](newCompPtr);
+				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ComponentTypeId(i));
+				ComponentInfo::s_ConstructComponentFunc[ComponentTypeId(i)](newCompPtr);
 			}
 		}
 
 		// Move components from current group to new one
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (mergedLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ecs::ComponentTypeId(i));
-				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ecs::ComponentTypeId(i));
+				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ComponentTypeId(i));
 
-				ecs::ComponentInfo::s_MoveComponentFunc[ecs::ComponentTypeId(i)](newCompPtr, compPtr);
+				ComponentInfo::s_MoveComponentFunc[ComponentTypeId(i)](newCompPtr, compPtr);
 			}
 		}
 
 		// Destruct removed components
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (oldLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ecs::ComponentTypeId(i));
-				ecs::ComponentInfo::s_DestructComponentFunc[ecs::ComponentTypeId(i)](compPtr);
+				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				ComponentInfo::s_DestructComponentFunc[ComponentTypeId(i)](compPtr);
 			}
 		}
 
@@ -351,8 +351,8 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 
 		const auto entityHandleToFix = group->RemoveEntity(entity.m_LocalIndex);
 		if (entityHandle != entityHandleToFix) {
-			const auto threadIdxToFix = ecs::ToThreadIndex(entityHandleToFix);
-			const auto entityIdxToFix = ecs::ToEntityIndex(entityHandleToFix);
+			const auto threadIdxToFix = ToThreadIndex(entityHandleToFix);
+			const auto entityIdxToFix = ToEntityIndex(entityHandleToFix);
 			auto& entityToFix = m_TLS[threadIdxToFix].GetEntity(entityIdxToFix);
 			entityToFix.m_LocalIndex = entity.m_LocalIndex;
 		}
@@ -372,7 +372,7 @@ void ecs::World::ExecuteChangeEntityLayout(ecs::EntityHandle entityHandle) {
 	layout.m_State.m_Bits = layout.m_RequiredBits;
 }
 
-ecs::Group* ecs::World::GetGroup(const ecs::Bitset& typeBitmask) {
+auto ecs::World::GetGroup(const Bitset& typeBitmask) -> Group* {
 	for (auto group : m_Groups) {
 		if (group->GetTypeBits() == typeBitmask) {
 			return group;
@@ -381,7 +381,7 @@ ecs::Group* ecs::World::GetGroup(const ecs::Bitset& typeBitmask) {
 
 	const uint32_t newGroupIndex = static_cast<uint32_t>(m_Groups.size());
 
-	ecs::Group* newGroup = new ecs::Group(typeBitmask, newGroupIndex);
+	Group* newGroup = new Group(typeBitmask, newGroupIndex);
 	m_Groups.push_back(newGroup);
 	return newGroup;
 }

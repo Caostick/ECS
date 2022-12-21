@@ -42,18 +42,18 @@ namespace ecs {
 	using EntityGroupId = uint16_t;
 	using ComponentTypeId = uint16_t;
 	using ComponentCounterType = uint16_t;
-	using Bitset = df::Bitset<ecs::MaxComponentCount>;
+	using Bitset = TBitset<MaxComponentCount>;
 
 	constexpr uint32_t CommandBufferPageSize = 1024 * 1024;
 	constexpr uint32_t ThreadIndexBits = 6;
-	constexpr ecs::EntityHandle UnassignedEntityHandle = ecs::EntityHandle(-1);
-	constexpr ecs::EntityGroupId UnassignedEntityGroupId = ecs::EntityGroupId(-1);
+	constexpr EntityHandle UnassignedEntityHandle = EntityHandle(-1);
+	constexpr EntityGroupId UnassignedEntityGroupId = EntityGroupId(-1);
 	constexpr int Alignment = 4;
 	constexpr Bitset EmptyEntityLayout = 0;
 
-	uint32_t ToThreadIndex(ecs::EntityHandle handle);
-	uint32_t ToEntityIndex(ecs::EntityHandle handle);
-	ecs::EntityHandle ToEntityHandle(uint32_t threadIndex, uint32_t entityIndex);
+	auto ToThreadIndex(EntityHandle handle) -> uint32_t;
+	auto ToEntityIndex(EntityHandle handle) -> uint32_t;
+	auto ToEntityHandle(uint32_t threadIndex, uint32_t entityIndex) -> EntityHandle;
 
 	struct EntityLayoutState {
 		EntityLayoutState() = default;
@@ -64,8 +64,8 @@ namespace ecs {
 		bool operator == (const EntityLayoutState& other) const;
 		bool operator != (const EntityLayoutState& other) const;
 
-		ecs::Bitset m_Bits;
-		ecs::Bitset m_BitsJustAttached;
-		ecs::Bitset m_BitsJustDetached;
+		Bitset m_Bits;
+		Bitset m_BitsJustAttached;
+		Bitset m_BitsJustDetached;
 	};
 }

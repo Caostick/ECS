@@ -7,7 +7,7 @@ ecs::WorldTLS::WorldTLS()
 	IncreasePoolSize(InitialEntityCount);
 }
 
-uint32_t ecs::WorldTLS::CreateEntity() {
+auto ecs::WorldTLS::CreateEntity() -> uint32_t {
 	if (m_AvailableEntityIndex >= m_EntityPoolSize) {
 		IncreasePoolSize(m_EntityPoolSize * 2);
 	}
@@ -54,23 +54,23 @@ void ecs::WorldTLS::RequestAllComponentsDetach(uint32_t entityIndex) {
 	m_Layouts[entityIndex].m_RequiredBits.reset();
 }
 
-ecs::EntityLayout& ecs::WorldTLS::GetEntityLayout(uint32_t entityIndex) {
+auto ecs::WorldTLS::GetEntityLayout(uint32_t entityIndex) -> EntityLayout& {
 	return m_Layouts[entityIndex];
 }
 
-ecs::Entity& ecs::WorldTLS::GetEntity(uint32_t entityIndex) {
+auto ecs::WorldTLS::GetEntity(uint32_t entityIndex) -> Entity& {
 	return m_Entities[entityIndex];
 }
 
-const ecs::Entity& ecs::WorldTLS::GetEntity(uint32_t entityIndex) const {
+auto ecs::WorldTLS::GetEntity(uint32_t entityIndex) const -> const Entity& {
 	return m_Entities[entityIndex];
 }
 
-uint32_t ecs::WorldTLS::GetEntityGroupIndex(uint32_t entityIndex) const {
+auto ecs::WorldTLS::GetEntityGroupIndex(uint32_t entityIndex) const -> uint32_t {
 	return m_Entities[entityIndex].m_GroupIndex;
 }
 
-uint32_t ecs::WorldTLS::GetEntityLocalIndex(uint32_t entityIndex) const {
+auto ecs::WorldTLS::GetEntityLocalIndex(uint32_t entityIndex) const -> uint32_t {
 	return m_Entities[entityIndex].m_LocalIndex;
 }
 
@@ -79,7 +79,7 @@ void ecs::WorldTLS::DestroyEntity(uint32_t entityIndex) {
 	m_Entities[entityIndex].m_LocalIndex = 0;
 	m_RemovedEntities[entityIndex] = false;
 	m_DirtyEntities[entityIndex] = false;
-	m_Layouts[entityIndex].m_State = ecs::EntityLayoutState();
+	m_Layouts[entityIndex].m_State = EntityLayoutState();
 	m_Layouts[entityIndex].m_RequiredBits = 0;
 
 	m_EntityIndices[entityIndex] = m_AvailableEntityIndex;
@@ -92,7 +92,7 @@ void ecs::WorldTLS::ResetCommands() {
 	m_CommandBuffer.Reset();
 }
 
-ecs::CommandBuffer& ecs::WorldTLS::GetCommandBuffer() {
+auto ecs::WorldTLS::GetCommandBuffer() -> CommandBuffer& {
 	return m_CommandBuffer;
 }
 
@@ -107,7 +107,7 @@ void ecs::WorldTLS::IncreasePoolSize(uint32_t newPoolSize) {
 		m_EntityIndices[i] = i + 1;
 		m_Entities[i].m_GroupIndex = 0;
 		m_Entities[i].m_LocalIndex = 0;
-		m_Layouts[i].m_State = ecs::EntityLayoutState();
+		m_Layouts[i].m_State = EntityLayoutState();
 		m_Layouts[i].m_RequiredBits = 0;
 		m_RemovedEntities[i] = false;
 		m_DirtyEntities[i] = false;

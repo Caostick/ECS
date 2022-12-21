@@ -6,25 +6,25 @@
 // 1 - Array of structures
 #define USE_ARRAY_OF_STRUCTURES_STORAGE 0
 
-ecs::Group::Group(const ecs::Bitset& bits, uint32_t groupIndex) : m_EntityTypeBits(bits)
+ecs::Group::Group(const Bitset& bits, uint32_t groupIndex) : m_EntityTypeBits(bits)
 , m_GroupIndex(groupIndex)
 , m_EntityCount(0)
 , m_EntitySize(0) {
 #if USE_ARRAY_OF_STRUCTURES_STORAGE
-	for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+	for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 		const bool bitIsSet = m_EntityTypeBits[i];
-		m_EntitySize += bitIsSet ? ecs::ComponentInfo::s_ComponentSizeInfo[i] : 0;
+		m_EntitySize += bitIsSet ? ComponentInfo::s_ComponentSizeInfo[i] : 0;
 
 		m_ComponentOffsets[i] = bitIsSet ? m_EntitySize : -1;
 	}
 #else
 	uint32_t componentPoolOffset = 0;
-	for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+	for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 		const bool bitIsSet = m_EntityTypeBits[i];
-		m_EntitySize += bitIsSet ? ecs::ComponentInfo::s_ComponentSizeInfo[i] : 0;
+		m_EntitySize += bitIsSet ? ComponentInfo::s_ComponentSizeInfo[i] : 0;
 
 		m_ComponentOffsets[i] = bitIsSet ? componentPoolOffset : -1;
-		componentPoolOffset += bitIsSet ? (ecs::ComponentInfo::s_ComponentSizeInfo[i] * EntitiesPerGroupDataPage) : 0;
+		componentPoolOffset += bitIsSet ? (ComponentInfo::s_ComponentSizeInfo[i] * EntitiesPerGroupDataPage) : 0;
 }
 #endif
 }
@@ -38,11 +38,11 @@ ecs::Group::~Group() {
 	m_DataPages.clear();
 }
 
-uint32_t ecs::Group::GetIndex() const {
+auto ecs::Group::GetIndex() const -> uint32_t {
 	return m_GroupIndex;
 }
 
-uint32_t ecs::Group::GetEntityCount() const {
+auto ecs::Group::GetEntityCount() const -> uint32_t {
 	return m_EntityCount;
 }
 
@@ -50,11 +50,11 @@ bool ecs::Group::IsEmpty() const {
 	return m_EntityCount == 0;
 }
 
-const ecs::Bitset& ecs::Group::GetTypeBits() const {
+auto ecs::Group::GetTypeBits() const -> const Bitset& {
 	return m_EntityTypeBits;
 }
 
-uint32_t ecs::Group::AddEntity(ecs::EntityHandle entity) {
+auto ecs::Group::AddEntity(ecs::EntityHandle entity) -> uint32_t {
 	const auto entityCapacity = static_cast<uint32_t>(m_DataPages.size() * EntitiesPerGroupDataPage);
 	if (m_EntityCount >= entityCapacity) {
 		AddDataPage();
@@ -65,17 +65,17 @@ uint32_t ecs::Group::AddEntity(ecs::EntityHandle entity) {
 	return m_EntityCount++;
 }
 
-ecs::EntityHandle ecs::Group::RemoveEntity(uint32_t localIndex) {
+auto ecs::Group::RemoveEntity(uint32_t localIndex) -> EntityHandle {
 	const auto lastEntIndex = m_EntityCount - 1;
 
-	ecs::EntityHandle changedEntity = m_EntityBackRefs[lastEntIndex];
+	EntityHandle changedEntity = m_EntityBackRefs[lastEntIndex];
 	if (localIndex != lastEntIndex) {
-		for (uint32_t i = 0; i < ecs::MaxComponentCount; ++i) {
+		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if(m_EntityTypeBits[i]) {
-				uint8_t* compPtr = GetComponentData(lastEntIndex, ecs::ComponentTypeId(i));
-				uint8_t* remCompPtr = GetComponentData(localIndex, ecs::ComponentTypeId(i));
+				uint8_t* compPtr = GetComponentData(lastEntIndex, ComponentTypeId(i));
+				uint8_t* remCompPtr = GetComponentData(localIndex, ComponentTypeId(i));
 
-				ecs::ComponentInfo::s_MoveComponentFunc[ecs::ComponentTypeId(i)](remCompPtr, compPtr);
+				ComponentInfo::s_MoveComponentFunc[ComponentTypeId(i)](remCompPtr, compPtr);
 			}
 		}
 
@@ -93,11 +93,11 @@ ecs::EntityHandle ecs::Group::RemoveEntity(uint32_t localIndex) {
 	return changedEntity;
 }
 
-ecs::EntityHandle ecs::Group::GetEntityBackReference(uint32_t localIndex) {
+auto ecs::Group::GetEntityBackReference(uint32_t localIndex) -> EntityHandle {
 	return m_EntityBackRefs[localIndex];
 }
 
-uint8_t* ecs::Group::GetComponentData(uint32_t localIndex, ecs::ComponentTypeId componentTypeId) {
+auto ecs::Group::GetComponentData(uint32_t localIndex, ComponentTypeId componentTypeId) -> uint8_t* {
 #if USE_ARRAY_OF_STRUCTURES_STORAGE
 	const auto pageIndex = localIndex / EntitiesPerGroupDataPage;
 	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
@@ -111,7 +111,7 @@ uint8_t* ecs::Group::GetComponentData(uint32_t localIndex, ecs::ComponentTypeId 
 	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
 
 	const uint32_t componentPoolOffset = m_ComponentOffsets[componentTypeId];
-	const uint32_t componentOffset = pageLocalIndex * ecs::ComponentInfo::s_ComponentSizeInfo[componentTypeId];
+	const uint32_t componentOffset = pageLocalIndex * ComponentInfo::s_ComponentSizeInfo[componentTypeId];
 
 	return m_DataPages[pageIndex] + componentPoolOffset + componentOffset;
 #endif

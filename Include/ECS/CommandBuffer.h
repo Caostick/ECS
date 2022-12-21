@@ -11,42 +11,43 @@ namespace ecs {
 	};
 
 	struct Command {
-		ecs::EntityHandle m_EntityHandle;
-		ecs::ECommandType m_CommandType;
-		ecs::ComponentTypeId m_ComponentTypeId;
+		EntityHandle m_EntityHandle;
+		ECommandType m_CommandType;
+		ComponentTypeId m_ComponentTypeId;
 		uint8_t* m_ComponentDataPtr;
 	};
 
 	class CommandBuffer {
 	public:
-		const ecs::Vector<ecs::Command>::iterator begin();
-		const ecs::Vector<ecs::Command>::iterator end();
+		auto begin() -> const Vector<Command>::iterator;
+		auto end() -> const Vector<Command>::iterator;
 
 	public:
 		CommandBuffer();
 		~CommandBuffer();
 
 		template<typename T, typename ...TArgs>
-		T& AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args);
+		auto AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T&;
 
 		template <typename T>
-		void DetachComponent(ecs::EntityHandle entityHandle);
+		void DetachComponent(EntityHandle entityHandle);
 
-		void DestroyEntity(ecs::EntityHandle entityHandle);
+		void DestroyEntity(EntityHandle entityHandle);
 
 		bool IsEmpty() const;
 		void Reset();
 
 	private:
 		template<typename T, typename ...TArgs>
-		T* AllocateAndConstructComponent(TArgs&&... args);
+		auto AllocateAndConstructComponent(TArgs&&... args) -> T*;
 
-		uint8_t* AllocateComponentData(uint32_t size);
+		auto AllocateComponentData(uint32_t size) -> uint8_t*;
 
+	private:
 		uint32_t m_DataSize;
 
-		ecs::Vector<Command> m_Commands;
-		ecs::Vector<uint8_t*> m_Pages;
+		Vector<Command> m_Commands;
+		Vector<uint8_t*> m_Pages;
 	};
 }
 

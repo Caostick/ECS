@@ -10,7 +10,7 @@ namespace ecs {
 	public:
 		WorldTLS();
 
-		uint32_t CreateEntity();
+		auto CreateEntity() -> uint32_t;
 
 		void MarkForDestroy(uint32_t entityIndex, bool value);
 		bool IsMarkedForDestroy(uint32_t entityIndex) const;
@@ -20,26 +20,26 @@ namespace ecs {
 		void RequestComponentDetach(uint32_t entityIndex, uint32_t componentTypeId);
 		void RequestAllComponentsDetach(uint32_t entityIndex);
 
-		ecs::EntityLayout& GetEntityLayout(uint32_t entityIndex);
-		ecs::Entity& GetEntity(uint32_t entityIndex);
-		const ecs::Entity& GetEntity(uint32_t entityIndex) const;
-		uint32_t GetEntityGroupIndex(uint32_t entityIndex) const;
-		uint32_t GetEntityLocalIndex(uint32_t entityIndex) const;
+		auto GetEntityLayout(uint32_t entityIndex) -> EntityLayout&;
+		auto GetEntity(uint32_t entityIndex) -> Entity&;
+		auto GetEntity(uint32_t entityIndex) const -> const Entity&;
+		auto GetEntityGroupIndex(uint32_t entityIndex) const -> uint32_t;
+		auto GetEntityLocalIndex(uint32_t entityIndex) const -> uint32_t;
 		void DestroyEntity(uint32_t entityIndex);
 
 		void ResetCommands();
 
-		ecs::CommandBuffer& GetCommandBuffer();
+		auto GetCommandBuffer() -> CommandBuffer&;
 
 	private:
 		void IncreasePoolSize(uint32_t newPoolSize);
 
-		ecs::CommandBuffer m_CommandBuffer;
-		ecs::Vector<uint32_t> m_EntityIndices;
-		ecs::Vector<Entity> m_Entities;
-		ecs::Vector<EntityLayout> m_Layouts;
-		ecs::Vector<bool> m_RemovedEntities;
-		ecs::Vector<bool> m_DirtyEntities;
+		CommandBuffer m_CommandBuffer;
+		Vector<uint32_t> m_EntityIndices;
+		Vector<Entity> m_Entities;
+		Vector<EntityLayout> m_Layouts;
+		Vector<bool> m_RemovedEntities;
+		Vector<bool> m_DirtyEntities;
 		uint32_t m_EntityPoolSize;
 		uint32_t m_EntityCount;
 		uint32_t m_AvailableEntityIndex;

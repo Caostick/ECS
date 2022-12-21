@@ -8,25 +8,25 @@ namespace ecs {
 		template<typename, typename, typename, typename>
 		friend struct Query;
 	public:
-		WorldView(ecs::World& world);
+		WorldView(World& world);
 
-		auto CreateEntity() -> ecs::EntityHandle;
-		void DestroyEntity(ecs::EntityHandle entityHandle);
+		auto CreateEntity() -> EntityHandle;
+		void DestroyEntity(EntityHandle entityHandle);
 
 		template<typename T, typename ...TArgs>
-		auto AttachComponent(ecs::EntityHandle entityHandle, TArgs&&... args) -> T&;
+		auto AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T&;
 
 		template<typename T>
-		void DetachComponent(ecs::EntityHandle entityHandle);
+		void DetachComponent(EntityHandle entityHandle);
 
 		template<typename T>
-		auto GetComponent(ecs::EntityHandle entityHandle) -> T&;
+		auto GetComponent(EntityHandle entityHandle) -> T&;
 
 	protected:
 		operator ecs::World& ();
 
 	private:
-		ecs::World& m_World;
+		World& m_World;
 	};
 }
 

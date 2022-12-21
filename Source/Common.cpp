@@ -1,14 +1,14 @@
 #include <ECS/Common.h>
 
-uint32_t ecs::ToThreadIndex(EntityHandle handle) {
+auto ecs::ToThreadIndex(EntityHandle handle) -> uint32_t {
 	return handle & ((1 << ThreadIndexBits) - 1);
 }
 
-uint32_t ecs::ToEntityIndex(EntityHandle handle) {
+auto ecs::ToEntityIndex(EntityHandle handle) -> uint32_t {
 	return handle >> ThreadIndexBits;
 }
 
-ecs::EntityHandle ecs::ToEntityHandle(uint32_t threadIndex, uint32_t entityIndex) {
+auto ecs::ToEntityHandle(uint32_t threadIndex, uint32_t entityIndex) -> EntityHandle {
 	return (threadIndex & ((1 << ThreadIndexBits) - 1)) | (entityIndex << ThreadIndexBits);
 }
 

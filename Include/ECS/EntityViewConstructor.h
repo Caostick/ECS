@@ -12,7 +12,7 @@ namespace ecs {
 	class EntityViewConstructor;
 
 	template<typename TEntityType, typename TL>
-	class EntityViewConstructor<TEntityType, TL, typename std::enable_if<ecs::Length<TL>::value == 1>::type> {
+	class EntityViewConstructor<TEntityType, TL, typename std::enable_if<Length<TL>::value == 1>::type> {
 	public:
 		EntityViewConstructor(World& world, EntityHandle entityHandle);
 		EntityViewConstructor(World& world, EntityHandle entityHandle, ComponentArray<typename TEntityType::TypeList>& components);
@@ -27,13 +27,13 @@ namespace ecs {
 	};
 
 	template<typename TEntityType, typename TL>
-	class EntityViewConstructor<TEntityType, TL, typename std::enable_if<ecs::Length<TL>::value != 1>::type> {
+	class EntityViewConstructor<TEntityType, TL, typename std::enable_if<Length<TL>::value != 1>::type> {
 	public:
 		EntityViewConstructor(World& world, EntityHandle entityHandle);
 		EntityViewConstructor(World& world, EntityHandle entityHandle, ComponentArray<typename TEntityType::TypeList>& components);
 
 		template<typename T, typename ...TArgs>
-		auto Construct(TArgs&&... args)->EntityViewConstructor<TEntityType, typename ecs::RemoveAll<T, TL>::type>;
+		auto Construct(TArgs&&... args)->EntityViewConstructor<TEntityType, typename RemoveAll<T, TL>::type>;
 
 	private:
 		World& m_World;

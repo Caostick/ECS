@@ -9,7 +9,7 @@ namespace ecs {
 	};
 
 	struct EntityLayout {
-		ecs::EntityLayoutState m_State;
-		ecs::Bitset m_RequiredBits;
+		EntityLayoutState m_State;
+		Bitset m_RequiredBits;
 	};
 }
