@@ -50,7 +50,7 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView
 	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 
-	const Bitset addedBits = ComponentTypeBits<TLAdded>::Bits();
+	const Bitset addedBits = ComponentTypeBits<TL_ADDED>::Bits();
 	const Bitset removedBits = ComponentTypeBits<TL_REMOVED>::Bits();
 	const Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
 	const Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
@@ -62,13 +62,7 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView
 	const auto queryId = QueryTypeInfo<Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>>::GetQueryId();
 	auto& queryCache = world.GetQueryCache(queryId);
 
-	const bool initialized =
-		queryCache.m_AddedBits == addedBits &&
-		queryCache.m_RemovedBits == removedBits &&
-		queryCache.m_IncludeBits == includeBits &&
-		queryCache.m_ExcludeBits == excludeBits;
-
-	if (!initialized) {
+	if (!queryCache.m_HasLayout) {
 		queryCache.m_AddedBits = addedBits;
 		queryCache.m_RemovedBits = removedBits;
 		queryCache.m_IncludeBits = includeBits;
@@ -115,8 +109,6 @@ auto ecs::QueryTypeInfo<T>::GetQueryId() -> QueryTypeId {
 template<typename T>
 auto ecs::QueryTypeInfo<T>::GetQueryIdStatic() -> QueryTypeId {
 	static QueryTypeId id = QueryRegistry::s_QueryCount++;
-
-	printf("Registered Query: %s\n", typeid(T).name());
 
 	return id;
 }

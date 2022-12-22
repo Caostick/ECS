@@ -23,11 +23,6 @@ namespace ecs {
 
 	template<typename TL_INCLUDE = TypeList<>, typename TL_EXCLUDE = TypeList<>, typename TL_ADDED = TypeList<>, typename TL_REMOVED = TypeList<>>
 	struct Query {
-		using TLInclude = TL_INCLUDE;
-		using TLExclude = TL_EXCLUDE;
-		using TLAdded = TL_ADDED;
-		using TLRemoved = TL_REMOVED;
-
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
 		using Include = Query<typename Append<const T, TL_INCLUDE>::type, TL_EXCLUDE, TL_ADDED, TL_REMOVED>;
 
