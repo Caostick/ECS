@@ -23,6 +23,11 @@ namespace ecs {
 
 	template<typename TL_INCLUDE = TypeList<>, typename TL_EXCLUDE = TypeList<>, typename TL_ADDED = TypeList<>, typename TL_REMOVED = TypeList<>>
 	struct Query {
+		using TLInclude = TL_INCLUDE;
+		using TLExclude = TL_EXCLUDE;
+		using TLAdded = TL_ADDED;
+		using TLRemoved = TL_REMOVED;
+
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
 		using Include = Query<typename Append<const T, TL_INCLUDE>::type, TL_EXCLUDE, TL_ADDED, TL_REMOVED>;
 
@@ -42,6 +47,26 @@ namespace ecs {
 		template<typename... Args>
 		static auto Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>>;
 	};
+
+	struct QueryRegistry {
+		static QueryCounterType s_QueryCount;
+	};
+
+	template<typename T>
+	struct QueryTypeInfo {
+	public:
+		static QueryTypeId s_QueryTypeId;
+
+		static auto GetQueryId() -> QueryTypeId;
+
+	private:
+		static auto GetQueryIdStatic() -> QueryTypeId;
+	};
 }
+
+//ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>
+
+template<typename T>
+ecs::QueryTypeId ecs::QueryTypeInfo<T>::s_QueryTypeId = ecs::QueryTypeInfo<T>::GetQueryIdStatic();
 
 #include <ECS/Query.inl>

@@ -41,7 +41,9 @@ namespace ecs {
 
 	using EntityGroupId = uint16_t;
 	using ComponentTypeId = uint16_t;
+	using QueryTypeId = uint32_t;
 	using ComponentCounterType = uint16_t;
+	using QueryCounterType = uint16_t;
 	using Bitset = TBitset<MaxComponentCount>;
 
 	constexpr uint32_t CommandBufferPageSize = 1024 * 1024;

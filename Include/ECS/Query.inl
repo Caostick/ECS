@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ECS/QueryCache.h>
+
 namespace {
 	template<typename TL>
 	struct ComponentTypeBits {
@@ -41,31 +43,42 @@ ecs::QueryResult<TL, WVTL>::operator ecs::EntityHandle () const {
 template<typename TL_INCLUDE /*= ecs::TypeList<>*/, typename TL_EXCLUDE /*= ecs::TypeList<>*/, typename TL_ADDED /*= ecs::TypeList<>*/, typename TL_REMOVED /*= ecs::TypeList<>*/>
 template<typename... Args>
 auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> {
+
 	using WorldViewTypeList = typename ExtendWithConst<TypeList<Args...>>::type;
 
 	static_assert(ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 
-	const Bitset addedBits = ComponentTypeBits<TL_ADDED>::Bits();
+	const Bitset addedBits = ComponentTypeBits<TLAdded>::Bits();
 	const Bitset removedBits = ComponentTypeBits<TL_REMOVED>::Bits();
 	const Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
 	const Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
 
 	Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> results;
 
-	// @TODO: Make proper iterator instead of filling and returning array
 	World& world = worldView;
-	for (const auto group : world.m_Groups) {
+
+	const auto queryId = QueryTypeInfo<Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>>::GetQueryId();
+	auto& queryCache = world.GetQueryCache(queryId);
+
+	const bool initialized =
+		queryCache.m_AddedBits == addedBits &&
+		queryCache.m_RemovedBits == removedBits &&
+		queryCache.m_IncludeBits == includeBits &&
+		queryCache.m_ExcludeBits == excludeBits;
+
+	if (!initialized) {
+		queryCache.m_AddedBits = addedBits;
+		queryCache.m_RemovedBits = removedBits;
+		queryCache.m_IncludeBits = includeBits;
+		queryCache.m_ExcludeBits = excludeBits;
+		queryCache.m_HasLayout = true;
+		world.InitQueryCache(queryCache);
+	}
+
+	for (const auto group : queryCache.m_Groups) {
 		if (group->IsEmpty()) {
-			continue;
-		}
-
-		const auto &groupBits = group->GetTypeBits();
-		const bool includeFits = ((groupBits & includeBits) == includeBits);
-		const bool excludeFits = ((~groupBits & excludeBits) == excludeBits);
-
-		if (!(includeFits && excludeFits)) {
 			continue;
 		}
 
@@ -89,3 +102,22 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView
 
 	return results;
 }
+
+
+
+
+
+template<typename T>
+auto ecs::QueryTypeInfo<T>::GetQueryId() -> QueryTypeId {
+	return s_QueryTypeId;
+}
+
+template<typename T>
+auto ecs::QueryTypeInfo<T>::GetQueryIdStatic() -> QueryTypeId {
+	static QueryTypeId id = QueryRegistry::s_QueryCount++;
+
+	printf("Registered Query: %s\n", typeid(T).name());
+
+	return id;
+}
+
