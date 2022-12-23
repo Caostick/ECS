@@ -18,7 +18,7 @@ namespace ecs {
 	struct Component;
 
 	template<typename T>
-	struct Component<T, typename std::enable_if<std::is_empty<T>::value>::type> {
+	struct Component<T, typename std::enable_if_t<std::is_empty<T>::value>> {
 	public:
 		static ComponentTypeId s_ComponentTypeId;
 		static Bitset s_ComponentTypeBitmask;
@@ -33,7 +33,7 @@ namespace ecs {
 	};
 
 	template<typename T>
-	struct Component<T, typename std::enable_if<!std::is_empty<T>::value>::type> {
+	struct Component<T, typename std::enable_if_t<!std::is_empty<T>::value>> {
 	public:
 		static ComponentTypeId s_ComponentTypeId;
 		static Bitset s_ComponentTypeBitmask;
