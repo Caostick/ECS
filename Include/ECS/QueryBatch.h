@@ -11,18 +11,19 @@ namespace ecs {
 	template<typename TL = TypeList<>, typename WVTL = TypeList<>>
 	class QueryBatch {
 	public:
-		QueryBatch(const World& world, QueryCache& cache);
+		QueryBatch(const World& world, const QueryCache& cache);
+
+		struct Sentinel {};
 
 		class Iterator {
 		public:
 			Iterator() = delete;
 			Iterator(const Iterator&) = default;
 			Iterator(Iterator&&) = default;
-			Iterator(const World& world, QueryCache& cache, uint32_t groupIdx, uint32_t entityIdx);
-			Iterator(const World& world, QueryCache& cache, uint32_t groupIdx, uint32_t entityIdx, bool end);
+			Iterator(const World& world, const QueryCache& cache, uint32_t groupIdx, uint32_t entityIdx);
 
 			auto operator++()->Iterator&;
-			bool operator != (const Iterator& other) const;
+			bool operator != (const Sentinel& other) const;
 			auto operator* () const->QueryResult<TL, WVTL>;
 
 		private:
@@ -31,21 +32,18 @@ namespace ecs {
 
 		private:
 			const World& m_World;
-			QueryCache& m_Cache;
+			const QueryCache& m_Cache;
 			uint32_t m_GroupIdx;
+			uint32_t m_GroupIdxEnd;
 			uint32_t m_EntityIdx;
 		};
 
 		auto begin()->Iterator;
-		auto end()->Iterator;
+		auto end()->Sentinel;
 
 	private:
 		const World& m_World;
-		QueryCache& m_Cache;
-		uint32_t m_GroupBegin;
-		uint32_t m_EntityBegin;
-		uint32_t m_GroupEnd;
-		uint32_t m_EntityEnd;
+		const QueryCache& m_Cache;
 	};
 }
 
