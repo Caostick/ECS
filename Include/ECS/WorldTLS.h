@@ -21,6 +21,7 @@ namespace ecs {
 		void RequestAllComponentsDetach(uint32_t entityIndex);
 
 		auto GetEntityLayout(uint32_t entityIndex) -> EntityLayout&;
+		auto GetEntityLayout(uint32_t entityIndex) const -> const EntityLayout&;
 		auto GetEntity(uint32_t entityIndex) -> Entity&;
 		auto GetEntity(uint32_t entityIndex) const -> const Entity&;
 		auto GetEntityGroupIndex(uint32_t entityIndex) const -> uint32_t;

@@ -30,6 +30,10 @@ namespace ecs {
 	class World {
 		template<typename, typename, typename, typename>
 		friend struct Query;
+
+		template<typename, typename>
+		friend class QueryBatch;
+
 	public:
 		void Init(const ThreadManager* threadManager = nullptr);
 		void Release();

@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.1)
 
-option(ECS_TESTS "Enable build of tests" OFF)
-option(ECS_EXAMPLE "Enable build of example" OFF)
+option(ECS_TESTS "Enable build of tests" ON)
+option(ECS_EXAMPLE "Enable build of example" ON)
 
 project(ECS)
 
@@ -23,6 +23,10 @@ set(ECS_INCLUDE_LIST
 	Include/ECS/Group.inl
 	Include/ECS/Query.h
 	Include/ECS/Query.inl
+	Include/ECS/QueryBatch.h
+	Include/ECS/QueryBatch.inl
+	Include/ECS/QueryResult.h
+	Include/ECS/QueryResult.inl
 	Include/ECS/QueryCache.h
 	Include/ECS/System.h
 	Include/ECS/System.inl

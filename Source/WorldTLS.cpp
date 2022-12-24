@@ -58,6 +58,10 @@ auto ecs::WorldTLS::GetEntityLayout(uint32_t entityIndex) -> EntityLayout& {
 	return m_Layouts[entityIndex];
 }
 
+auto ecs::WorldTLS::GetEntityLayout(uint32_t entityIndex) const -> const EntityLayout& {
+	return m_Layouts[entityIndex];
+}
+
 auto ecs::WorldTLS::GetEntity(uint32_t entityIndex) -> Entity& {
 	return m_Entities[entityIndex];
 }

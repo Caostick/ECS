@@ -1,26 +1,10 @@
 #pragma once
 
 #include <ECS/Common.h>
-#include <ECS/Component.h>
-#include <ECS/Group.h>
 #include <ECS/WorldView.h>
-#include <ECS/World.h>
+#include <ECS/QueryBatch.h>
 
 namespace ecs {
-	template<typename TL = TypeList<>, typename WVTL = TypeList<>>
-	class QueryResult {
-	public:
-		QueryResult(Group* group, uint32_t entityLocalIndex);
-
-		template<typename T>
-		auto Get() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>;
-
-		operator EntityHandle() const;
-	private:
-		Group* m_Group;
-		uint32_t m_EntityLocalIndex;
-	};
-
 	template<typename TL_INCLUDE = TypeList<>, typename TL_EXCLUDE = TypeList<>, typename TL_ADDED = TypeList<>, typename TL_REMOVED = TypeList<>>
 	struct Query {
 		template<typename T, typename = std::enable_if_t<!std::is_const_v<T>, void>>
@@ -40,7 +24,7 @@ namespace ecs {
 		using QueryResultList = typename RemoveDuplicates<typename QRT2>::type;
 
 		template<typename... Args>
-		static auto Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>>;
+		static auto Iterate(WorldView<Args...>& worldView)->QueryBatch<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>;
 	};
 
 	struct QueryRegistry {
@@ -58,8 +42,6 @@ namespace ecs {
 		static auto GetQueryIdStatic() -> QueryTypeId;
 	};
 }
-
-//ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>
 
 template<typename T>
 ecs::QueryTypeId ecs::QueryTypeInfo<T>::s_QueryTypeId = ecs::QueryTypeInfo<T>::GetQueryIdStatic();
