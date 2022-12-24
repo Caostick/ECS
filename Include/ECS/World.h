@@ -6,6 +6,7 @@
 #include <ECS/Entity.h>
 #include <ECS/Group.h>
 #include <ECS/WorldTLS.h>
+#include <ECS/QueryCache.h>
 
 namespace ecs {
 	class System;
@@ -29,6 +30,10 @@ namespace ecs {
 	class World {
 		template<typename, typename, typename, typename>
 		friend struct Query;
+
+		template<typename, typename>
+		friend class QueryBatch;
+
 	public:
 		void Init(const ThreadManager* threadManager = nullptr);
 		void Release();
@@ -70,12 +75,16 @@ namespace ecs {
 		void ExecuteChangeEntityLayout(EntityHandle entityHandle);
 
 		auto GetGroup(const Bitset& typeBitmask) -> Group*;
+		auto GetQueryCache(uint32_t id) -> QueryCache&;
+		void InitQueryCache(QueryCache& queryCache);
+		void TryCacheGroup(QueryCache& queryCache, Group* group);
 
 		const ThreadManager* m_ThreadManager = nullptr;
 		ThreadManager* m_DefaultThreadManager = nullptr;
 
 		Vector<WorldTLS> m_TLS;
 		Vector<Group*> m_Groups;
+		Vector<QueryCache> m_Queries;
 
 		Vector<EntityHandle> m_EntitiesToDestroy;
 		Vector<EntityHandle> m_EntitiesToChangeLayout;

@@ -23,6 +23,11 @@ set(ECS_INCLUDE_LIST
 	Include/ECS/Group.inl
 	Include/ECS/Query.h
 	Include/ECS/Query.inl
+	Include/ECS/QueryBatch.h
+	Include/ECS/QueryBatch.inl
+	Include/ECS/QueryResult.h
+	Include/ECS/QueryResult.inl
+	Include/ECS/QueryCache.h
 	Include/ECS/System.h
 	Include/ECS/System.inl
 	Include/ECS/ThreadManager.h
@@ -40,6 +45,7 @@ set(ECS_SRC_LIST
 	Source/Common.cpp
 	Source/Component.cpp
 	Source/Group.cpp
+	Source/Query.cpp
 	Source/World.cpp
 	Source/WorldTLS.cpp
 )

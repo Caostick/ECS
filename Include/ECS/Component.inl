@@ -4,23 +4,23 @@
 
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::GetTypeId() -> ComponentTypeId {
+auto ecs::Component<T, typename std::enable_if_t<std::is_empty<T>::value>>::GetTypeId() -> ComponentTypeId {
 	return s_ComponentTypeId;
 }
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::GetTypeBitmask() -> Bitset {
+auto ecs::Component<T, typename std::enable_if_t<std::is_empty<T>::value>>::GetTypeBitmask() -> Bitset {
 	return s_ComponentTypeBitmask;
 }
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::GetTypeSize() -> uint32_t {
+auto ecs::Component<T, typename std::enable_if_t<std::is_empty<T>::value>>::GetTypeSize() -> uint32_t {
 	return 0;
 }
 
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::GetComponentId() -> ComponentTypeId {
+auto ecs::Component<T, typename std::enable_if_t<std::is_empty<T>::value>>::GetComponentId() -> ComponentTypeId {
 	static ecs::ComponentTypeId id = ecs::ComponentInfo::s_ComponentCount++;
 	ECSAssert(id < ecs::MaxComponentCount, "Increase max component count!");
 
@@ -50,23 +50,23 @@ auto ecs::Component<T, typename std::enable_if<std::is_empty<T>::value>::type>::
 
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetTypeId() -> ComponentTypeId {
+auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetTypeId() -> ComponentTypeId {
 	return s_ComponentTypeId;
 }
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetTypeBitmask() -> Bitset {
+auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetTypeBitmask() -> Bitset {
 	return s_ComponentTypeBitmask;
 }
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetTypeSize() -> uint32_t {
+auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetTypeSize() -> uint32_t {
 	return s_ComponentTypeSize;
 }
 
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if<!std::is_empty<T>::value>::type>::GetComponentId() -> ComponentTypeId {
+auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetComponentId() -> ComponentTypeId {
 	static ComponentTypeId id = ComponentInfo::s_ComponentCount++;
 	ECSAssert(id < MaxComponentCount, "Increase max component count!");
 

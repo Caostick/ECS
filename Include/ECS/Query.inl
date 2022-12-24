@@ -1,5 +1,9 @@
 #pragma once
 
+#include <ECS/QueryCache.h>
+#include <ECS/Component.h>
+#include <ECS/World.h>
+
 namespace {
 	template<typename TL>
 	struct ComponentTypeBits {
@@ -17,75 +21,46 @@ namespace {
 	};
 }
 
-template<typename TL, typename WVTL>
-ecs::QueryResult<TL, WVTL>::QueryResult(Group* group, uint32_t entityLocalIndex)
-	: m_Group(group)
-	, m_EntityLocalIndex(entityLocalIndex) {}
-
-template<typename TL, typename WVTL>
-template<typename T>
-typename std::conditional_t<ecs::Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>
-ecs::QueryResult<TL, WVTL>::Get() {
-	static_assert(Contains<const T, TL>::value, "Component of type is inaccessible!");
-	static_assert(!std::is_const_v<T>, "Modifier const is deprecated!");
-	static_assert(!std::is_empty<T>::value, "Can't access empty component!");
-
-	return *m_Group->GetComponent<std::remove_const_t<T>>(m_EntityLocalIndex);
-}
-
-template<typename TL, typename WVTL>
-ecs::QueryResult<TL, WVTL>::operator ecs::EntityHandle () const {
-	return m_Group->GetEntityBackReference(m_EntityLocalIndex);
-}
-
 template<typename TL_INCLUDE /*= ecs::TypeList<>*/, typename TL_EXCLUDE /*= ecs::TypeList<>*/, typename TL_ADDED /*= ecs::TypeList<>*/, typename TL_REMOVED /*= ecs::TypeList<>*/>
 template<typename... Args>
-auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView<Args...>& worldView)->Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> {
+auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView<Args...>& worldView)->QueryBatch<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type> {
+
 	using WorldViewTypeList = typename ExtendWithConst<TypeList<Args...>>::type;
 
 	static_assert(ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
 
-	const Bitset addedBits = ComponentTypeBits<TL_ADDED>::Bits();
-	const Bitset removedBits = ComponentTypeBits<TL_REMOVED>::Bits();
-	const Bitset includeBits = addedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
-	const Bitset excludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
-
-	Vector<QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>> results;
-
-	// @TODO: Make proper iterator instead of filling and returning array
 	World& world = worldView;
-	for (const auto group : world.m_Groups) {
-		if (group->IsEmpty()) {
-			continue;
-		}
 
-		const auto &groupBits = group->GetTypeBits();
-		const bool includeFits = ((groupBits & includeBits) == includeBits);
-		const bool excludeFits = ((~groupBits & excludeBits) == excludeBits);
+	const auto queryId = QueryTypeInfo<Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>>::GetQueryId();
+	auto& queryCache = world.GetQueryCache(queryId);
 
-		if (!(includeFits && excludeFits)) {
-			continue;
-		}
-
-		for (uint32_t i = 0; i < group->GetEntityCount(); ++i) {
-			const auto entityHandle = group->GetEntityBackReference(i);
-
-			const auto threadIdx = ToThreadIndex(entityHandle);
-			const auto entityIdx = ToEntityIndex(entityHandle);
-			auto &tls = world.m_TLS[threadIdx];
-			auto &layout = tls.GetEntityLayout(entityIdx);
-
-			const bool attachedFits = ((layout.m_State.m_BitsJustAttached & addedBits) == addedBits);
-			const bool detachedFits = ((layout.m_State.m_BitsJustDetached & removedBits) == removedBits);
-			const bool detachedNotIncludedFits = (layout.m_State.m_BitsJustDetached & includeBits).none();
-
-			if (attachedFits && detachedFits && detachedNotIncludedFits) {
-				results.emplace_back(QueryResult<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>(group, i));
-			}
-		}
+	if (!queryCache.m_HasLayout) {
+		queryCache.m_AddedBits = ComponentTypeBits<TL_ADDED>::Bits();
+		queryCache.m_RemovedBits = ComponentTypeBits<TL_REMOVED>::Bits();
+		queryCache.m_IncludeBits = queryCache.m_AddedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
+		queryCache.m_ExcludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
+		queryCache.m_HasLayout = true;
+		world.InitQueryCache(queryCache);
 	}
 
-	return results;
+	return QueryBatch<QueryResultList, typename ExtendWithConst<TypeList<Args...>>::type>(world, queryCache);
 }
+
+
+
+
+
+template<typename T>
+auto ecs::QueryTypeInfo<T>::GetQueryId() -> QueryTypeId {
+	return s_QueryTypeId;
+}
+
+template<typename T>
+auto ecs::QueryTypeInfo<T>::GetQueryIdStatic() -> QueryTypeId {
+	static QueryTypeId id = QueryRegistry::s_QueryCount++;
+
+	return id;
+}
+

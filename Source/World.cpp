@@ -1,6 +1,7 @@
 #include <ECS/World.h>
 #include <ECS/System.h>
 #include <ECS/ThreadManager.h>
+#include <ECS/Query.h>
 
 void ecs::World::Init(const ThreadManager* threadManager /*= nullptr*/) {
 	if (!threadManager) {
@@ -10,6 +11,8 @@ void ecs::World::Init(const ThreadManager* threadManager /*= nullptr*/) {
 	m_ThreadManager = m_DefaultThreadManager;
 
 	m_TLS.resize(m_ThreadManager->GetThreadCount());
+
+	m_Queries.resize(QueryRegistry::s_QueryCount);
 
 	m_Groups.push_back(new Group(0, 0));
 }
@@ -237,6 +240,29 @@ auto ecs::World::GetEntityBackreference(EntityHandle entityHandle) const -> Enti
 	return entity.m_GroupIndex == 0 ? entityHandle : m_Groups[entity.m_GroupIndex]->GetEntityBackReference(entity.m_LocalIndex);
 }
 
+auto ecs::World::GetQueryCache(uint32_t id) -> QueryCache& {
+	ECSAssert(id < m_Queries.size(), "QueryCache index is out of range!");
+	return m_Queries[id];
+}
+
+void ecs::World::InitQueryCache(QueryCache& queryCache) {
+	for (auto group : m_Groups) {
+		TryCacheGroup(queryCache, group);
+	}
+}
+
+void ecs::World::TryCacheGroup(QueryCache& queryCache, Group* group) {
+	const auto& groupBits = group->GetTypeBits();
+	const bool includeFits = ((groupBits & queryCache.m_IncludeBits) == queryCache.m_IncludeBits);
+	const bool excludeFits = ((~groupBits & queryCache.m_ExcludeBits) == queryCache.m_ExcludeBits);
+
+	if (!(includeFits && excludeFits)) {
+		return;
+	}
+
+	queryCache.m_Groups.push_back(group);
+}
+
 void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 	const auto threadIdx = ToThreadIndex(entityHandle);
 	const auto entityIdx = ToEntityIndex(entityHandle);
@@ -381,7 +407,15 @@ auto ecs::World::GetGroup(const Bitset& typeBitmask) -> Group* {
 
 	const uint32_t newGroupIndex = static_cast<uint32_t>(m_Groups.size());
 
-	Group* newGroup = new Group(typeBitmask, newGroupIndex);
-	m_Groups.push_back(newGroup);
-	return newGroup;
+	Group* group = new Group(typeBitmask, newGroupIndex);
+	m_Groups.push_back(group);
+
+	for(auto& queryCache : m_Queries) {
+		if (!queryCache.m_HasLayout) {
+			continue;
+		}
+		TryCacheGroup(queryCache, group);
+	}
+
+	return group;
 }
