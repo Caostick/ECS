@@ -1,12 +1,12 @@
 #pragma once
 
-struct PositionComponent {
-	PositionComponent(int coord) : Coord(coord) {}
-	PositionComponent(PositionComponent&&) = default;
-	PositionComponent& operator = (PositionComponent&&) = default;
+struct TransformComponent {
+	TransformComponent(int coord) : Coord(coord) {}
+	TransformComponent(TransformComponent&&) = default;
+	TransformComponent& operator = (TransformComponent&&) = default;
 
-	PositionComponent(const PositionComponent&) = delete;
-	PositionComponent& operator = (const PositionComponent&) = delete;
+	TransformComponent(const TransformComponent&) = delete;
+	TransformComponent& operator = (const TransformComponent&) = delete;
 
 	int Coord;
 };

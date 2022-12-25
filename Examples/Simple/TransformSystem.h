@@ -7,7 +7,7 @@
 class TransformSystem : public ecs::System {
 public:
 	using WorldView = ecs::WorldView<
-		PositionComponent
+		TransformComponent
 	>;
 
 	TransformSystem(int step);

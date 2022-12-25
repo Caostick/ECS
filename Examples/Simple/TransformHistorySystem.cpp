@@ -4,12 +4,12 @@
 
 void PositionHistorySystem::Update(WorldView& world, [[maybe_unused]] float dt) {
 	using Query = ecs::Query<>
-		::Include<PositionComponent>
-		::Include<PositionHistoryComponent>;
+		::Include<TransformComponent>
+		::Include<TransformHistoryComponent>;
 
 	for (auto e : Query::Iterate(world)) {
-		auto& transformComponent = e.Get<PositionComponent>();
-		auto& transformHistoryComponent = e.Get<PositionHistoryComponent>();
+		auto& transformComponent = e.Get<TransformComponent>();
+		auto& transformHistoryComponent = e.Get<TransformHistoryComponent>();
 
 		transformHistoryComponent.Coord = transformComponent.Coord;
 	}

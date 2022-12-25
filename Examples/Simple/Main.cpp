@@ -17,8 +17,8 @@ int main() {
 
 
 	auto e = world.CreateEntity();
-	world.AttachComponent<PositionComponent>(e, 10);
-	world.AttachComponent<PositionHistoryComponent>(e);
+	world.AttachComponent<TransformComponent>(e, 10);
+	world.AttachComponent<TransformHistoryComponent>(e);
 
 	// Update
 	for (int i = 0; i < 100; ++i) {
@@ -27,7 +27,7 @@ int main() {
 	}
 	world.FinishAllCommands();
 
-	std::cout << "Coord: " << world.GetComponent<PositionHistoryComponent>(e).Coord << '\n';
+	std::cout << "Coord: " << world.GetComponent<TransformHistoryComponent>(e).Coord << '\n';
 
 	// Deinitialization
 	world.Release();

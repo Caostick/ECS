@@ -1,12 +1,12 @@
 #pragma once
 
-struct PositionHistoryComponent {
-	PositionHistoryComponent() = default;
-	PositionHistoryComponent(PositionHistoryComponent&&) = default;
-	PositionHistoryComponent& operator = (PositionHistoryComponent&&) = default;
+struct TransformHistoryComponent {
+	TransformHistoryComponent() = default;
+	TransformHistoryComponent(TransformHistoryComponent&&) = default;
+	TransformHistoryComponent& operator = (TransformHistoryComponent&&) = default;
 
-	PositionHistoryComponent(const PositionHistoryComponent&) = delete;
-	PositionHistoryComponent& operator = (const PositionHistoryComponent&) = delete;
+	TransformHistoryComponent(const TransformHistoryComponent&) = delete;
+	TransformHistoryComponent& operator = (const TransformHistoryComponent&) = delete;
 
 	int Coord;
 };

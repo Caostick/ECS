@@ -8,8 +8,8 @@
 class PositionHistorySystem : public ecs::System {
 public:
 	using WorldView = ecs::WorldView<
-		const PositionComponent,
-		PositionHistoryComponent
+		const TransformComponent,
+		TransformHistoryComponent
 	>;
 
 	void Update(WorldView& world, float dt);
