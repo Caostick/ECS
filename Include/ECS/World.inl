@@ -2,6 +2,7 @@
 
 #include <ECS/WorldView.h>
 #include <ECS/ThreadManager.h>
+#include <ECS/Component.h>
 
 template<typename T, typename ...TArgs>
 void ecs::World::RegisterSystem(TArgs&&... args) {
@@ -43,6 +44,19 @@ auto ecs::World::GetComponent(EntityHandle entityHandle) -> T& {
 	auto group = m_Groups[entity.m_GroupIndex];
 
 	return *group->GetComponent<std::remove_const_t<T>>(entity.m_LocalIndex);
+}
+
+template<typename T>
+bool ecs::World::HasComponent(EntityHandle entityHandle) const {
+	const auto threadIndex = ToThreadIndex(entityHandle);
+	const auto entityIndex = ToEntityIndex(entityHandle);
+	const auto& tls = m_TLS[threadIndex];
+	const auto& entity = tls.GetEntity(entityIndex);
+	const auto group = m_Groups[entity.m_GroupIndex];
+	const auto& groupBits = group->GetTypeBits();
+	const auto& componentBits = ecs::Component<std::remove_const_t<T>>::GetTypeBitmask();
+
+	return (groupBits & componentBits) == componentBits;
 }
 
 template<typename T>

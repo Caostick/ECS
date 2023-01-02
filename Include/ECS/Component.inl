@@ -55,7 +55,7 @@ auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::Get
 }
 
 template<typename T>
-auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetTypeBitmask() -> Bitset {
+auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::GetTypeBitmask() -> const Bitset& {
 	return s_ComponentTypeBitmask;
 }
 

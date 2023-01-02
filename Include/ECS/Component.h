@@ -40,7 +40,7 @@ namespace ecs {
 		static uint32_t s_ComponentTypeSize;
 
 		static auto GetTypeId() -> ComponentTypeId;
-		static auto GetTypeBitmask() -> Bitset;
+		static auto GetTypeBitmask() -> const Bitset&;
 		static auto GetTypeSize() -> uint32_t;
 
 	private:

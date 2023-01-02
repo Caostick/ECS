@@ -54,6 +54,9 @@ namespace ecs {
 		auto GetComponent(EntityHandle entityHandle) -> T&;
 
 		template<typename T>
+		bool HasComponent(EntityHandle entityHandle) const;
+
+		template<typename T>
 		bool IsAdded(EntityHandle entityHandle) const;
 
 		template<typename T>

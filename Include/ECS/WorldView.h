@@ -7,6 +7,8 @@ namespace ecs {
 	class WorldView {
 		template<typename, typename, typename, typename>
 		friend struct Query;
+
+		using TL = TypeList<ARGS...>;
 	public:
 		WorldView(World& world);
 
@@ -20,7 +22,10 @@ namespace ecs {
 		void DetachComponent(EntityHandle entityHandle);
 
 		template<typename T>
-		auto GetComponent(EntityHandle entityHandle) -> T&;
+		auto GetComponent(EntityHandle entityHandle) -> typename std::conditional_t<Contains<std::remove_const_t<T>, TL>::value, T&, const T&>;
+
+		template<typename T>
+		bool HasComponent(EntityHandle entityHandle) const;
 
 	protected:
 		operator ecs::World& ();
