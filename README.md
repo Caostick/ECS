@@ -143,13 +143,14 @@ For query available next access masks:
 - ::Added - component has been just added to entity
 - ::Removed - component has been just removed from entity. Component data lives one frame after component detaching
 
-One may want to have optional access to a component what is not present in query, since it may/may not be attached to an entity. In this case there is a way to check whether component is attached or not. Component has to be present in WorldView as well.
+One may want to have optional access to a component what is not present in query, since it may/may not be attached to an entity. In this case there is a way to check whether component is attached or not. Component has to be present in WorldView as well. (IMPORTANT!!! Will be deprecated. EntityView will have access to optional instead of WorldView)
 ```
   using WorldView = ecs::WorldView<OptionalComponent, ...>;
   
   ...
 	
   if(world.Has<OptionalComponent>(e)) {
+    // IMPORTANT!!! Will be deprecated. EntityView will have access to optional instead of WorldView
     auto& optionalComponent = world.GetComponent<OptionalComponent>(e);
   }
 ```
