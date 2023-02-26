@@ -17,8 +17,8 @@ void ecs::World::RegisterSystem(TArgs&&... args) {
 
 template<typename T, typename ...TArgs>
 auto ecs::World::AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> T& {
-	const auto entityThreadIndex = ToThreadIndex(entityHandle);
-	auto& tls = m_TLS[entityThreadIndex]; // m_ThreadManager->GetThreadIndex()
+	const auto threadIndex = m_ThreadManager->GetThreadIndex();
+	auto& tls = m_TLS[threadIndex];
 	auto& commandBuffer = tls.GetCommandBuffer();
 
 	return commandBuffer.AttachComponent<std::remove_const_t<T>>(entityHandle, std::forward<TArgs>(args)...);
@@ -26,8 +26,8 @@ auto ecs::World::AttachComponent(EntityHandle entityHandle, TArgs&&... args) -> 
 
 template<typename T>
 void ecs::World::DetachComponent(EntityHandle entityHandle) {
-	const auto entityThreadIndex = ToThreadIndex(entityHandle);
-	auto& tls = m_TLS[entityThreadIndex]; // m_ThreadManager->GetThreadIndex()
+	const auto threadIndex = m_ThreadManager->GetThreadIndex();
+	auto& tls = m_TLS[threadIndex];
 	auto& commandBuffer = tls.GetCommandBuffer();
 
 	commandBuffer.DetachComponent<std::remove_const_t<T>>(entityHandle);

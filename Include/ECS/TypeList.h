@@ -49,11 +49,6 @@ namespace ecs {
 		: std::false_type {
 	};
 
-	template<typename ...Args>
-	struct Contains<_private::Void, Args...> 
-		: std::false_type {
-	};
-
 	template<typename T, typename ...Args>
 	struct Contains<T, TypeList<Args...>> 
 		: std::integral_constant<bool, std::is_same<typename TypeList<Args...>::Head, T>::value || Contains<T, typename TypeList<Args...>::Tail>::value> {
