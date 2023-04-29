@@ -27,9 +27,9 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView
 
 	using WorldViewTypeList = typename ExtendWithConst<TypeList<Args...>>::type;
 
-	static_assert(ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
-	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
-	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain any query components!");
+	static_assert(ContainsList<TL_INCLUDE, WorldViewTypeList>::value, "WorldView doesn't contain some query components!");
+	static_assert(ContainsList<TL_ADDED, WorldViewTypeList>::value, "WorldView doesn't contain some query components!");
+	static_assert(ContainsList<TL_REMOVED, WorldViewTypeList>::value, "WorldView doesn't contain some query components!");
 
 	World& world = worldView;
 
