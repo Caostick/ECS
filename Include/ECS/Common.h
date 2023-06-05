@@ -5,6 +5,7 @@
 #include <ECS/EntityHandle.h>
 #include <ECS/Bitset.h>
 #include <ECS/Vector.h>
+#include <ECS/Lock.h>
 #include <ECS/TypeList.h>
 
 #if _DEBUG

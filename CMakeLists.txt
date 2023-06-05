@@ -7,6 +7,7 @@ project(ECS)
 
 set(ECS_INCLUDE_LIST
 	Include/ECS/Assert.h
+	Include/ECS/Lock.h
 	Include/ECS/Bitset.h
 	Include/ECS/CommandBuffer.h
 	Include/ECS/CommandBuffer.inl
