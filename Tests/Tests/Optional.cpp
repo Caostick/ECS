@@ -32,10 +32,14 @@ TEST_CASE("Optional") {
 
 	world.ExecuteCommands();
 
+	bool hasC = false;
 
 	using Query = ecs::Query<>::Include<ComponentA>;
 	for (auto e : Query::Iterate(worldView)) {
 		const ecs::EntityHandle entityHandle = e;
+
+		hasC |= worldView.HasComponent<ComponentC>(e);
+
 		if(worldView.HasComponent<ComponentB>(e)) {
 			[[maybe_unused]] auto&& b = worldView.GetComponent<ComponentB>(e);
 			setAwithB.insert(entityHandle);
@@ -43,6 +47,8 @@ TEST_CASE("Optional") {
 			setAwithoutB.insert(entityHandle);
 		}
 	}
+
+	REQUIRE(hasC == false);
 
 	auto setABEx = setAwithB;
 	for(auto e : setAwithoutB) {

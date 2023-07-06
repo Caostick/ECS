@@ -42,8 +42,6 @@ auto ecs::WorldView<Args...>::GetComponent(EntityHandle entityHandle) -> typenam
 template<typename... Args>
 template<typename T>
 bool ecs::WorldView<Args...>::HasComponent(EntityHandle entityHandle) const {
-	static_assert(Contains<const T, ExtendWithConst<TL>::type>::value, "WorldView doesn't contain component!");
-
 	return m_World.HasComponent<T>(entityHandle);
 }
 
