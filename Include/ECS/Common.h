@@ -29,6 +29,7 @@
 }
 
 #else
+#define ECSPrintSystemInfo() void()
 #define ECSPrintTypeInfo() void()
 #endif // _DEBUG
 
