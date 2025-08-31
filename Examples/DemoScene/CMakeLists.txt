@@ -1,5 +1,3 @@
-cmake_minimum_required (VERSION 3.1)
-
 project(DemoSceneExample)
 
 FILE(GLOB _FILES_ ./*.h ./*.cpp)
