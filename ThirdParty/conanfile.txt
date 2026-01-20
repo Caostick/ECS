@@ -1,7 +1,0 @@
-[requires]
-glfw/3.3.7
-glew/2.2.0
-glm/0.9.5.4
-
-[generators]
-cmake

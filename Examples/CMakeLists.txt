@@ -1,3 +1,2 @@
 add_subdirectory(Simple)
-add_subdirectory(DemoScene)
 add_subdirectory(MultipleLevels)
