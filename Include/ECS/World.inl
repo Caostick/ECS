@@ -3,14 +3,21 @@
 #include <ECS/WorldView.h>
 #include <ECS/ThreadManager.h>
 #include <ECS/Component.h>
+#include <ECS/Utils.h>
 
 template<typename T, typename ...TArgs>
 void ecs::World::RegisterSystem(TArgs&&... args) {
+	using WorldView = typename T::WorldView;
+	using TypeList = typename WorldView::TL;
+
 	SystemInfo systemInfo;
 
 	systemInfo.m_System = new T(std::forward<TArgs>(args)...);
 	systemInfo.m_UpdateFunction = &UpdateSystem<T>;
-	m_SystemInfos.emplace_back(systemInfo);
+	systemInfo.m_ComponentAccessMask = utils::ComponentTypeBits<TypeList>::Bits();
+	systemInfo.m_MutableComponentAccessMask = utils::MutableComponentTypeBits<TypeList>::Bits();
+
+	m_SystemInfos.emplace_back(std::move(systemInfo));
 
 	ECSPrintSystemInfo();
 }

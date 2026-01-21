@@ -3,23 +3,7 @@
 #include <ECS/QueryCache.h>
 #include <ECS/Component.h>
 #include <ECS/World.h>
-
-namespace {
-	template<typename TL>
-	struct ComponentTypeBits {
-		static auto Bits() -> ecs::Bitset {
-			if constexpr (ecs::IsEmpty<TL>::value) {
-				return ecs::Bitset();
-
-			} else {
-				using Head = TL::Head;
-				using Tail = TL::Tail;
-
-				return ecs::Component<std::remove_const<Head>::type>::GetTypeBitmask() | ComponentTypeBits<Tail>::Bits();
-			}
-		}
-	};
-}
+#include <ECS/Utils.h>
 
 template<typename TL_INCLUDE /*= ecs::TypeList<>*/, typename TL_EXCLUDE /*= ecs::TypeList<>*/, typename TL_ADDED /*= ecs::TypeList<>*/, typename TL_REMOVED /*= ecs::TypeList<>*/>
 template<typename... Args>
@@ -37,10 +21,10 @@ auto ecs::Query<TL_INCLUDE, TL_EXCLUDE, TL_ADDED, TL_REMOVED>::Iterate(WorldView
 	auto& queryCache = world.GetQueryCache(queryId);
 
 	if (!queryCache.m_HasLayout) {
-		queryCache.m_AddedBits = ComponentTypeBits<TL_ADDED>::Bits();
-		queryCache.m_RemovedBits = ComponentTypeBits<TL_REMOVED>::Bits();
-		queryCache.m_IncludeBits = queryCache.m_AddedBits | ComponentTypeBits<TL_INCLUDE>::Bits();
-		queryCache.m_ExcludeBits = ComponentTypeBits<TL_EXCLUDE>::Bits();
+		queryCache.m_AddedBits = utils::ComponentTypeBits<TL_ADDED>::Bits();
+		queryCache.m_RemovedBits = utils::ComponentTypeBits<TL_REMOVED>::Bits();
+		queryCache.m_IncludeBits = queryCache.m_AddedBits | utils::ComponentTypeBits<TL_INCLUDE>::Bits();
+		queryCache.m_ExcludeBits = utils::ComponentTypeBits<TL_EXCLUDE>::Bits();
 		queryCache.m_HasLayout = true;
 		world.InitQueryCache(queryCache);
 	}

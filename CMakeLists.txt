@@ -12,6 +12,8 @@ set(ECS_INCLUDE_LIST
 	Include/ECS/CommandBuffer.h
 	Include/ECS/CommandBuffer.inl
 	Include/ECS/Common.h
+	Include/ECS/Utils.h
+	Include/ECS/Utils.inl
 	Include/ECS/Component.h
 	Include/ECS/Component.inl
 	Include/ECS/Entity.h

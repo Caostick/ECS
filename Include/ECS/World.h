@@ -2,6 +2,7 @@
 
 #include <ECS/EntityView.h>
 #include <ECS/Common.h>
+#include <ECS/Bitset.h>
 #include <ECS/Component.h>
 #include <ECS/Entity.h>
 #include <ECS/Group.h>
@@ -25,6 +26,10 @@ namespace ecs {
 
 		System* m_System = nullptr;
 		SystemUpdateFunction* m_UpdateFunction = nullptr;
+		Bitset m_ComponentAccessMask;
+		Bitset m_MutableComponentAccessMask;
+
+		bool IsParallelCompatible(const SystemInfo& other) const;
 	};
 
 	class World {

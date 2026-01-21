@@ -3,6 +3,17 @@
 #include <ECS/ThreadManager.h>
 #include <ECS/Query.h>
 
+bool ecs::SystemInfo::IsParallelCompatible(const SystemInfo& other) const {
+	for (size_t i = 0; i < MaxComponentCount; ++i) {
+		if (m_MutableComponentAccessMask[i] && other.m_ComponentAccessMask[i] ||
+			other.m_MutableComponentAccessMask[i] && m_ComponentAccessMask[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void ecs::World::Init(const ThreadManager* threadManager /*= nullptr*/) {
 	if (!threadManager) {
 		m_DefaultThreadManager = new ThreadManager;

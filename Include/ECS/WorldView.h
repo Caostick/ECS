@@ -8,7 +8,9 @@ namespace ecs {
 		template<typename, typename, typename, typename>
 		friend struct Query;
 
+	public:
 		using TL = TypeList<ARGS...>;
+
 	public:
 		WorldView(World& world);
 
