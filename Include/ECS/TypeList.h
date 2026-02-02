@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <limits>
 
 namespace ecs {
 	namespace _private {
@@ -229,7 +230,7 @@ namespace ecs {
 	}
 
 	struct Constants {
-		typedef std::integral_constant<unsigned int, UINT_MAX> npos;
+		typedef std::integral_constant<unsigned int, std::numeric_limits<uint32_t>::max()> npos;
 	};
 
 	template<typename T, typename TL>
