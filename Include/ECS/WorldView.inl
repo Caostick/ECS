@@ -32,7 +32,9 @@ void ecs::WorldView<Args...>::DetachComponent(EntityHandle entityHandle) {
 template<typename... Args>
 template<typename T>
 auto ecs::WorldView<Args...>::GetComponent(EntityHandle entityHandle) -> typename std::conditional_t<ecs::Contains<std::remove_const_t<T>, TL>::value, T&, const T&> {
-	static_assert(Contains<const T, ExtendWithConst<TL>::type>::value, "Component of type is inaccessible!");
+	using TL = TypeList<Args...>;
+
+	static_assert(Contains<const T, typename ExtendWithConst<TL>::type>::value, "Component of type is inaccessible!");
 	static_assert(!std::is_const_v<T>, "Modifier const is deprecated!");
 	static_assert(!std::is_empty<T>::value, "Can't access empty component!");
 
