@@ -18,7 +18,7 @@ WIP:
 
 Initialization
 --------------
-```
+```cpp
 #include <ECS/World.h>
 
 // Create ecs world instance
@@ -37,7 +37,7 @@ world.RegisterSystem<AnotherSystem>();
 
 Updating
 --------
-```
+```cpp
 // Pass through all registered systems and call updates
 world.Update(deltaTime);
 
@@ -47,7 +47,7 @@ world.ExecuteCommands();
 
 Deinitialization
 ----------------
-```
+```cpp
 // Finish all commands which still can be stored in ecs command buffers
 world.FinishAllCommands();
 
@@ -62,7 +62,7 @@ Components
 
 Components are just data and have no any declared methods. All logic performed in systems.
 
-```
+```cpp
 struct MyComponentA {
   MyComponentA() = default;
   MyComponentA(MyComponentA&&) = default;
@@ -96,7 +96,7 @@ Systems
 Systems are logic which works according to entity component combination.
 
 .h
-```
+```cpp
 #include <ECS/System.h>
 
 #include <MyComponentA.h>
@@ -115,7 +115,7 @@ public:
 ```
 
 .cpp
-```
+```cpp
 #include <MySystem.h>
 #include <ECS/Query.h>
 
@@ -144,7 +144,7 @@ For query available next access masks:
 - ::Removed - component has been just removed from entity. Component data lives one frame after component detaching
 
 One may want to have optional access to a component what is not present in query, since it may/may not be attached to an entity. In this case there is a way to check whether component is attached or not. Component has to be present in WorldView as well. (IMPORTANT!!! Will be deprecated. EntityView will have access to optional instead of WorldView)
-```
+```cpp
   using WorldView = ecs::WorldView<OptionalComponent, ...>;
   
   ...
@@ -161,7 +161,7 @@ Entity
 Entity is just component container that has own handle/index. All components are stored in cache-friendly groups(buffers) according to entity layout(components bits)
 
 Entity and component creation
-```
+```cpp
 // Entity creates immediately and stores in thread-based storage, so this operation is thread safe
 auto e = world.CreateEntity();
 
@@ -172,7 +172,7 @@ world.AttachComponent<MyComponentB>(e, 123);
 ```
 
 If you want to has access to created component data right after creation, you may use entity creation via EntityView
-```
+```cpp
 #include <ECS/EntityView.h>
 #include <ECS/EntityViewConstructor.h>
 
