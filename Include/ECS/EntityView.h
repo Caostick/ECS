@@ -13,7 +13,7 @@ namespace ecs {
 
 	template<typename TL>
 	struct ComponentArray<TL, typename std::enable_if<!IsEmpty<TL>::value>::type> {
-		void* m_Pointers[Length<TL>::value];
+		void* m_Pointers[Length<TL>::value] = { nullptr };
 	};
 
 	template<typename... TArgs>
