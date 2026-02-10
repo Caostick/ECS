@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 4.1)
 option(ECS_TESTS "Enable build of tests" ON)
 option(ECS_EXAMPLE "Enable build of example" ON)
 
+set(ECS_MAX_COMPONENT_COUNT 64 CACHE INTEGER "Number of maximum components")
+
 project(ECS)
 
 set(ECS_INCLUDE_LIST
@@ -56,6 +58,7 @@ set(ECS_SRC_LIST
 add_library (ECS STATIC ${ECS_INCLUDE_LIST} ${ECS_SRC_LIST})
 
 target_include_directories(ECS PUBLIC Include/)
+target_compile_definitions(ECS PUBLIC ECS_MAX_COMPONENT_COUNT=${ECS_MAX_COMPONENT_COUNT})
 
 set_property(TARGET ECS PROPERTY CXX_STANDARD 20)
 

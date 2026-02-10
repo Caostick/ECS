@@ -37,7 +37,7 @@ namespace ecs {
 	// ecs::EntityHandle : [ThreadIndex, EntityIndex]
 	// ecs::Entity : [GroupIndex, LocalIndex]
 
-	constexpr uint32_t MaxComponentCount = 64;
+	constexpr uint32_t MaxComponentCount = ECS_MAX_COMPONENT_COUNT;
 	constexpr uint32_t InitialEntityCount = 64;
 	constexpr uint32_t EntitiesPerGroupDataPage = 16;
 
