@@ -11,12 +11,12 @@ Features:
 - Lockless safe multithreaded
 
 WIP:
-- Remove component type limit
 - Task manager/scheduler for systems according component access mask.
 - Global components(system context) with access mask. Instead of system dependency arguments, which can be thread-unsafe.
 
 Limitations:
-- Support for shared libs (currently works with static linked app, needs component sorting for shared).
+- No support for shared libs (currently works with static linked app).
+- Max component count is config-based compile-time value. So needs to rebuild library to change the parameter.
 
 Initialization
 --------------
