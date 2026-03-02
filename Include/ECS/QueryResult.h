@@ -16,6 +16,12 @@ namespace ecs {
 		template<typename T>
 		auto Get() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>;
 
+		template<typename T>
+		bool Has() const;
+
+		template<typename T>
+		auto GetOptional() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T*, const T*>;
+
 		operator EntityHandle() const;
 	private:
 		Group* m_Group;

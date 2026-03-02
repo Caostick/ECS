@@ -61,9 +61,8 @@ bool ecs::World::HasComponent(EntityHandle entityHandle) const {
 	const auto& entity = tls.GetEntity(entityIndex);
 	const auto group = m_Groups[entity.m_GroupIndex];
 	const auto& groupBits = group->GetTypeBits();
-	const auto& componentBits = ecs::Component<std::remove_const_t<T>>::GetTypeBitmask();
 
-	return (groupBits & componentBits) == componentBits;
+	return groupBits.test(ecs::Component<std::remove_const_t<T>>::GetTypeId());
 }
 
 template<typename T>
