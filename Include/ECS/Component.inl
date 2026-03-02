@@ -81,17 +81,8 @@ auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::Get
 	};
 
 	ComponentInfo::s_MoveComponentFunc[id] = [](void* dst, void* src) {
-		if constexpr (std::is_constructible_v<T>) {
-			T* srcComp = reinterpret_cast<T*>(src);
-			T* dstComp = reinterpret_cast<T*>(dst);
-
-			*dstComp = std::move(*srcComp);
-		} else if constexpr (std::is_move_constructible_v<T>) {
-			T* srcComp = reinterpret_cast<T*>(src);
-			T* dstComp = reinterpret_cast<T*>(dst);
-
-			new (dstComp) T(std::move(*srcComp));
-		}
+		std::swap(*reinterpret_cast<T*>(src), *reinterpret_cast<T*>(dst));
+		reinterpret_cast<T*>(src)->~T();
 
 		constexpr bool isValidType = std::is_constructible_v<T> || std::is_move_constructible_v<T>;
 		static_assert(isValidType, "No appropriate constructor for component!");

@@ -1,3 +1,5 @@
 #pragma once
 
-#define ECSAssert(expr, text)
+#include <cassert>
+
+#define ECSAssert(expr, text) assert(expr)
