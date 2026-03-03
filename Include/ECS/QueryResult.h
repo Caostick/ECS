@@ -13,13 +13,13 @@ namespace ecs {
 	public:
 		QueryResult(Group* group, uint32_t entityLocalIndex);
 
-		template<typename T>
+		template<typename T> requires (ecs::Contains<const T, TL>::value) && (not std::is_const_v<T>) && (not std::is_empty<T>::value)
 		auto Get() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T&, const T&>;
 
 		template<typename T>
 		bool Has() const;
 
-		template<typename T>
+		template<typename T> requires (ecs::Contains<const T, WVTL>::value) && (not std::is_const_v<T>) && (not std::is_empty<T>::value)
 		auto GetOptional() -> typename std::conditional_t<Contains<std::remove_const_t<T>, WVTL>::value, T*, const T*>;
 
 		operator EntityHandle() const;
