@@ -74,15 +74,12 @@ auto ecs::Component<T, typename std::enable_if_t<!std::is_empty<T>::value>>::Get
 	ComponentInfo::s_ComponentSizeInfo[id] = sizeof(T);
 	ComponentInfo::s_ComponentBitsInfo[id] = Bitset(1) << id;
 
-	ComponentInfo::s_ConstructComponentFunc[id] = []([[maybe_unused]] void* comp) {
-		if constexpr (std::is_constructible_v<T>) {
-			new (reinterpret_cast<T*>(comp)) T();
-		}
-	};
-
 	ComponentInfo::s_MoveComponentFunc[id] = [](void* dst, void* src) {
-		std::swap(*reinterpret_cast<T*>(src), *reinterpret_cast<T*>(dst));
-		reinterpret_cast<T*>(src)->~T();
+		T* srcComp = reinterpret_cast<T*>(src);
+		T* dstComp = reinterpret_cast<T*>(dst);
+
+		new (dstComp) T(std::move(*srcComp));
+		srcComp->~T();
 
 		constexpr bool isValidType = std::is_constructible_v<T> || std::is_move_constructible_v<T>;
 		static_assert(isValidType, "No appropriate constructor for component!");

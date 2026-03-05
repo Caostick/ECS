@@ -11,6 +11,7 @@
 namespace {
 	struct ComponentA {
 		ComponentA() = default;
+		ComponentA(uint32_t v0a) : v0(v0a) {}
 		ComponentA(const ComponentA& other) = delete;
 		ComponentA(ComponentA&& other) = default;
 
@@ -24,6 +25,7 @@ namespace {
 
 	struct ComponentB {
 		ComponentB() = default;
+		ComponentB(uint32_t v0a, uint32_t v1a) : v0(v0a), v1(v1a) {}
 		ComponentB(const ComponentB& other) = delete;
 		ComponentB(ComponentB&& other) = default;
 
@@ -38,6 +40,7 @@ namespace {
 
 	struct ComponentC {
 		ComponentC() = default;
+		ComponentC(uint32_t v0a, uint32_t v1a, uint32_t v2a) : v0(v0a), v1(v1a), v2(v2a) {}
 		ComponentC(const ComponentC& other) = delete;
 		ComponentC(ComponentC&& other) = default;
 
@@ -53,6 +56,7 @@ namespace {
 
 	struct ComponentD {
 		ComponentD() = default;
+		ComponentD(uint32_t v0a, uint32_t v1a, uint32_t v2a, uint32_t v3a) : v0(v0a), v1(v1a), v2(v2a), v3(v3a) {}
 		ComponentD(const ComponentD& other) = delete;
 		ComponentD(ComponentD&& other) = default;
 
@@ -84,6 +88,7 @@ namespace {
 
 	struct ComponentF {
 		ComponentF() = default;
+		ComponentF(uint32_t v0a) : v0(v0a) {}
 		ComponentF(const ComponentF& other) = delete;
 		ComponentF(ComponentF&& other) = default;
 

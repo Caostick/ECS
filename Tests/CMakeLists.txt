@@ -23,4 +23,4 @@ target_link_libraries(ECS_ut
 enable_testing()
 add_test(NAME ECS_ut COMMAND ECS_ut)
 
-set_property(TARGET ECS_ut PROPERTY CXX_STANDARD 17)
+set_property(TARGET ECS_ut PROPERTY CXX_STANDARD 20)

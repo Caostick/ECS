@@ -8,29 +8,37 @@ namespace {
 		ComponentExtend(const ComponentExtend&) = delete;
 		ComponentExtend(ComponentExtend&&) = default;
 		ComponentExtend& operator = (const ComponentExtend&) = delete;
-		ComponentExtend& operator = (ComponentExtend&&) = default;
+		ComponentExtend& operator = (ComponentExtend&&) = delete;
 
 		int m_Whatever = 0;
 	};
 
-	struct ComponentRefcount {
-		ComponentRefcount() {
+	struct Refcounter {
+		Refcounter() {
 			GlobalComponentRefcount++;
 		}
-
-		~ComponentRefcount() {
+		~Refcounter() {
 			GlobalComponentRefcount--;
 		}
+		Refcounter(const Refcounter&) = delete;
+		Refcounter(Refcounter&&) noexcept {
+			GlobalComponentRefcount++;
+		}
+		Refcounter& operator = (const Refcounter&) = delete;
+		Refcounter& operator = (Refcounter&&) = delete;
 
+		int32_t DATA = 0;
+	};
+
+	struct ComponentRefcount {
+		ComponentRefcount() = default;
+		~ComponentRefcount() = default;
 		ComponentRefcount(const ComponentRefcount&) = delete;
-
 		ComponentRefcount(ComponentRefcount&&) = default;
-
 		ComponentRefcount& operator = (const ComponentRefcount&) = delete;
-
 		ComponentRefcount& operator = (ComponentRefcount&&) = default;
 
-		int m_Whatever = 0;
+		Refcounter m_Refcounter;
 	};
 }
 
@@ -63,13 +71,31 @@ TEST_CASE("CheckCtorDtor") {
 	world.FinishAllCommands();
 	REQUIRE(GlobalComponentRefcount == 3);
 
-	for (const auto& e : entSet) {
+	{
+		auto e = entSet.back();
+		entSet.pop_back();
 		world.DetachComponent<ComponentRefcount>(e);
 		world.DestroyEntity(e);
 	}
 	world.FinishAllCommands();
+	REQUIRE(GlobalComponentRefcount == 2);
 
+
+	{
+		auto e = entSet.back();
+		world.AttachComponent<ComponentExtend>(e);
+		world.DetachComponent<ComponentRefcount>(e);
+	}
+	world.FinishAllCommands();
+	REQUIRE(GlobalComponentRefcount == 1);
+
+
+	for (const auto& e : entSet) {
+		world.DestroyEntity(e);
+	}
+	world.FinishAllCommands();
 	REQUIRE(GlobalComponentRefcount == 0);
+
 	world.Release();
 	REQUIRE(GlobalComponentRefcount == 0);
 }

@@ -182,7 +182,6 @@ void ecs::World::ExecuteCommands() {
 						uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, componentTypeId);
 
 						ComponentInfo::s_MoveComponentFunc[componentTypeId](compPtr, cmd.m_ComponentDataPtr);
-						ComponentInfo::s_DestructComponentFunc[componentTypeId](cmd.m_ComponentDataPtr);
 					}
 				}
 			}
@@ -293,15 +292,6 @@ void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
-		// Construct new components
-		const Bitset addedLayout = layout.m_RequiredBits;
-		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
-			if (addedLayout[i]) {
-				uint8_t* newCompPtr = group->GetComponentData(localIndex, ComponentTypeId(i));
-				ComponentInfo::s_ConstructComponentFunc[ComponentTypeId(i)](newCompPtr);
-			}
-		}
-
 	} else if (layout.m_RequiredBits == EmptyEntityLayout) {
 		// If NEW layout is empty
 
@@ -355,14 +345,6 @@ void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 		const Bitset newLayout = layout.m_RequiredBits;
 		const Bitset oldLayout = layout.m_State.m_Bits;
 
-		// Construct new components
-		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
-			if (newLayout[i]) {
-				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ComponentTypeId(i));
-				ComponentInfo::s_ConstructComponentFunc[ComponentTypeId(i)](newCompPtr);
-			}
-		}
-
 		// Move components from current group to new one
 		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (mergedLayout[i]) {
@@ -370,12 +352,7 @@ void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ComponentTypeId(i));
 
 				ComponentInfo::s_MoveComponentFunc[ComponentTypeId(i)](newCompPtr, compPtr);
-			}
-		}
-
-		// Destruct removed components
-		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
-			if (oldLayout[i]) {
+			} else if(oldLayout[i]) {
 				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
 				ComponentInfo::s_DestructComponentFunc[ComponentTypeId(i)](compPtr);
 			}
