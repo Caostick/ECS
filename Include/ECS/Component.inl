@@ -28,7 +28,6 @@ auto ecs::Component<T, typename std::enable_if_t<std::is_empty<T>::value>>::GetC
 	ecs::ComponentInfo::s_ComponentSizeInfo[id] = 0;
 	ecs::ComponentInfo::s_ComponentBitsInfo[id] = ecs::Bitset(1) << id;
 
-	ecs::ComponentInfo::s_ConstructComponentFunc[id] = [](void*) {};
 	ecs::ComponentInfo::s_MoveComponentFunc[id] = [](void*, void*) {};
 	ecs::ComponentInfo::s_DestructComponentFunc[id] = [](void*) {};
 

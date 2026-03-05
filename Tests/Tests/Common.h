@@ -12,11 +12,11 @@ namespace {
 	struct ComponentA {
 		ComponentA() = default;
 		ComponentA(uint32_t v0a) : v0(v0a) {}
-		ComponentA(const ComponentA& other) = delete;
-		ComponentA(ComponentA&& other) = default;
+		ComponentA(ComponentA&&) = default;
 
-		ComponentA& operator = (const ComponentA& other) = delete;
-		ComponentA& operator = (ComponentA&& other) = default;
+		ComponentA(const ComponentA&) = delete;
+		ComponentA& operator = (const ComponentA&) = delete;
+		ComponentA& operator = (ComponentA&&) = delete;
 
 		bool operator == (const ComponentA& other) const { return v0 == other.v0; }
 
@@ -26,11 +26,11 @@ namespace {
 	struct ComponentB {
 		ComponentB() = default;
 		ComponentB(uint32_t v0a, uint32_t v1a) : v0(v0a), v1(v1a) {}
-		ComponentB(const ComponentB& other) = delete;
-		ComponentB(ComponentB&& other) = default;
+		ComponentB(ComponentB&&) = default;
 
-		ComponentB& operator = (const ComponentB& other) = delete;
-		ComponentB& operator = (ComponentB&& other) = default;
+		ComponentB(const ComponentB&) = delete;
+		ComponentB& operator = (const ComponentB&) = delete;
+		ComponentB& operator = (ComponentB&&) = delete;
 
 		bool operator == (const ComponentB& other) const { return (v0 == other.v0) && (v1 == other.v1); }
 
@@ -41,11 +41,11 @@ namespace {
 	struct ComponentC {
 		ComponentC() = default;
 		ComponentC(uint32_t v0a, uint32_t v1a, uint32_t v2a) : v0(v0a), v1(v1a), v2(v2a) {}
-		ComponentC(const ComponentC& other) = delete;
-		ComponentC(ComponentC&& other) = default;
+		ComponentC(ComponentC&&) = default;
 
-		ComponentC& operator = (const ComponentC& other) = delete;
-		ComponentC& operator = (ComponentC&& other) = default;
+		ComponentC(const ComponentC&) = delete;
+		ComponentC& operator = (const ComponentC&) = delete;
+		ComponentC& operator = (ComponentC&&) = delete;
 
 		bool operator == (const ComponentC& other) const { return (v0 == other.v0) && (v1 == other.v1) && (v2 == other.v2); }
 
@@ -57,11 +57,11 @@ namespace {
 	struct ComponentD {
 		ComponentD() = default;
 		ComponentD(uint32_t v0a, uint32_t v1a, uint32_t v2a, uint32_t v3a) : v0(v0a), v1(v1a), v2(v2a), v3(v3a) {}
-		ComponentD(const ComponentD& other) = delete;
-		ComponentD(ComponentD&& other) = default;
+		ComponentD(ComponentD&&) = default;
 
-		ComponentD& operator = (const ComponentD& other) = delete;
-		ComponentD& operator = (ComponentD&& other) = default;
+		ComponentD(const ComponentD&) = delete;
+		ComponentD& operator = (const ComponentD&) = delete;
+		ComponentD& operator = (ComponentD&&) = delete;
 
 		bool operator == (const ComponentD& other) const { return (v0 == other.v0) && (v1 == other.v1) && (v2 == other.v2) && (v3 == other.v3); }
 
@@ -73,15 +73,11 @@ namespace {
 
 	struct ComponentE {
 		ComponentE() : m_SelfPtr(this) {}
-		ComponentE(const ComponentE& other) = delete;
-		ComponentE([[maybe_unused]] ComponentE&& other) : m_SelfPtr(this) {}
+		ComponentE(ComponentE&&) : m_SelfPtr(this) {}
 
-		ComponentE& operator = (const ComponentE& other) = delete;
-
-		ComponentE& operator = ([[maybe_unused]]  ComponentE&& other) {
-			m_SelfPtr = this;
-			return *this;
-		}
+		ComponentE(const ComponentE&) = delete;
+		ComponentE& operator = (const ComponentE&) = delete;
+		ComponentE& operator = (ComponentE&&) = delete;
 
 		ComponentE* m_SelfPtr;
 	};
@@ -89,11 +85,11 @@ namespace {
 	struct ComponentF {
 		ComponentF() = default;
 		ComponentF(uint32_t v0a) : v0(v0a) {}
-		ComponentF(const ComponentF& other) = delete;
-		ComponentF(ComponentF&& other) = default;
+		ComponentF(ComponentF&&) = default;
 
-		ComponentF& operator = (const ComponentF& other) = delete;
-		ComponentF& operator = (ComponentF&& other) = default;
+		ComponentF(const ComponentF&) = delete;
+		ComponentF& operator = (const ComponentF&) = delete;
+		ComponentF& operator = (ComponentF&&) = delete;
 
 		bool operator == (const ComponentF& other) const { return v0 == other.v0; }
 

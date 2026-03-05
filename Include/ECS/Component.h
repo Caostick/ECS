@@ -9,7 +9,6 @@ namespace ecs {
 		static uint32_t s_ComponentAmountInfo[MaxComponentCount];
 		static uint32_t s_ComponentSizeInfo[MaxComponentCount];
 		static const char* s_ComponentNameInfo[MaxComponentCount];
-		static void(*s_ConstructComponentFunc[MaxComponentCount])(void* comp);
 		static void(*s_MoveComponentFunc[MaxComponentCount])(void* dst, void* src);
 		static void(*s_DestructComponentFunc[MaxComponentCount])(void* comp);
 	};
@@ -47,8 +46,12 @@ namespace ecs {
 		static auto GetComponentId() -> ComponentTypeId;
 
 		static_assert(sizeof(T) % Alignment == 0, "Component struct not aligned!");
+		static_assert(std::is_move_constructible_v<T>, "Component has to have move c-tor!");
+		static_assert(std::is_destructible_v<T>, "Component has to have d-tor!");
+
 		static_assert(!std::is_copy_constructible_v<T>, "Component shouldn't have copy c-tor!");
 		static_assert(!std::is_copy_assignable_v<T>, "Component shouldn't have copy assignment!");
+		static_assert(!std::is_move_assignable_v<T>, "Component shouldn't have move assignment!");
 	};
 
 

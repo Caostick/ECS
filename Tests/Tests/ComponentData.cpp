@@ -8,8 +8,8 @@ TEST_CASE("ComponentData") {
 	ecs::EntityHandle handle1 = world.CreateEntity();
 	ecs::EntityHandle handle2 = world.CreateEntity();
 
-	world.AttachComponent<ComponentA>(handle1) = { 10 };
-	world.AttachComponent<ComponentD>(handle2) = { 26, 27, 28, 29 };
+	world.AttachComponent<ComponentA>(handle1, 10);
+	world.AttachComponent<ComponentD>(handle2, 26, 27, 28, 29);
 	world.FinishAllCommands();
 
 	REQUIRE(handle1 == world.GetEntityBackreference(handle1));
@@ -17,20 +17,20 @@ TEST_CASE("ComponentData") {
 	REQUIRE(world.GetComponent<ComponentA>(handle1) == ComponentA({ 10 }));
 	REQUIRE(world.GetComponent<ComponentD>(handle2) == ComponentD({ 26, 27, 28, 29 }));
 
-	world.AttachComponent<ComponentB>(handle1) = { 11, 12 };
-	world.AttachComponent<ComponentC>(handle2) = { 23, 24, 25 };
+	world.AttachComponent<ComponentB>(handle1, 11, 12);
+	world.AttachComponent<ComponentC>(handle2, 23, 24, 25);
 	world.FinishAllCommands();
 
 	REQUIRE(handle1 == world.GetEntityBackreference(handle1));
 	REQUIRE(handle2 == world.GetEntityBackreference(handle2));
-	REQUIRE(world.GetComponent<ComponentA>(handle1) == ComponentA({ 10 }));
-	REQUIRE(world.GetComponent<ComponentD>(handle2) == ComponentD({ 26, 27, 28, 29 }));
-	REQUIRE(world.GetComponent<ComponentB>(handle1) == ComponentB({ 11, 12 }));
-	REQUIRE(world.GetComponent<ComponentC>(handle2) == ComponentC({ 23, 24, 25 }));
+	REQUIRE(world.GetComponent<ComponentA>(handle1) == ComponentA({10}));
+	REQUIRE(world.GetComponent<ComponentD>(handle2) == ComponentD({26, 27, 28, 29}));
+	REQUIRE(world.GetComponent<ComponentB>(handle1) == ComponentB({11, 12}));
+	REQUIRE(world.GetComponent<ComponentC>(handle2) == ComponentC({23, 24, 25}));
 
 
-	world.AttachComponent<ComponentC>(handle1) = { 13, 14, 15 };
-	world.AttachComponent<ComponentB>(handle2) = { 21, 22 };
+	world.AttachComponent<ComponentC>(handle1, 13, 14, 15);
+	world.AttachComponent<ComponentB>(handle2, 21, 22);
 	world.FinishAllCommands();
 
 	REQUIRE(handle1 == world.GetEntityBackreference(handle1));
@@ -42,8 +42,8 @@ TEST_CASE("ComponentData") {
 	REQUIRE(world.GetComponent<ComponentC>(handle1) == ComponentC({ 13, 14, 15 }));
 	REQUIRE(world.GetComponent<ComponentB>(handle2) == ComponentB({ 21, 22 }));
 
-	world.AttachComponent<ComponentD>(handle1) = { 16, 17, 18, 19 };
-	world.AttachComponent<ComponentA>(handle2) = { 20 };
+	world.AttachComponent<ComponentD>(handle1, 16, 17, 18, 19);
+	world.AttachComponent<ComponentA>(handle2, 20);
 	world.FinishAllCommands();
 
 	REQUIRE(handle1 == world.GetEntityBackreference(handle1));
