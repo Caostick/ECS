@@ -47,6 +47,7 @@ namespace ecs {
 		void DestroyEntity(EntityHandle entityHandle);
 
 		template<typename T, typename ...TArgs>
+		requires std::is_constructible_v<T, TArgs...>
 		void RegisterSystem(TArgs&&... args);
 
 		template<typename T, typename ...TArgs>

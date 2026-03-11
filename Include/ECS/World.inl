@@ -6,6 +6,7 @@
 #include <ECS/Utils.h>
 
 template<typename T, typename ...TArgs>
+requires std::is_constructible_v<T, TArgs...>
 void ecs::World::RegisterSystem(TArgs&&... args) {
 	using WorldView = typename T::WorldView;
 	using TypeList = typename WorldView::TL;
