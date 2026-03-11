@@ -41,22 +41,20 @@ void ecs::CommandBuffer::Reset() {
 auto ecs::CommandBuffer::AllocateComponentData(uint32_t size) -> uint8_t* {
 	ECSAssert(size <= CommandBufferPageSize, "Trying to allocate mem size more than cb page size!");
 
-	const uint32_t currentPageIndex = m_DataSize / CommandBufferPageSize;
-	const uint32_t usedPageMemorySize = m_DataSize % CommandBufferPageSize;
-	const uint32_t availablePageMemorySize = CommandBufferPageSize - usedPageMemorySize;
+	const uint32_t pageIdx = m_DataSize / CommandBufferPageSize;
+	const uint32_t nextPageIdx = (m_DataSize + size) / CommandBufferPageSize;
 
-	uint32_t pageIndex = currentPageIndex;
-	uint8_t* dataPtr = m_Pages[pageIndex] + usedPageMemorySize;
+	if(nextPageIdx != pageIdx) {
+		m_DataSize = nextPageIdx * CommandBufferPageSize;
 
-	if (availablePageMemorySize < size) {
-		m_DataSize += availablePageMemorySize;
-
-		if (pageIndex >= m_Pages.size()) {
-			dataPtr = new uint8_t[CommandBufferPageSize];
-			m_Pages.push_back(dataPtr);
+		if(nextPageIdx >= m_Pages.size()) {
+			m_Pages.push_back(new uint8_t[CommandBufferPageSize]);
 		}
 	}
 
+	const uint32_t pageMemoryOffset = m_DataSize % CommandBufferPageSize;
+
 	m_DataSize += size;
-	return dataPtr;
+
+	return m_Pages[nextPageIdx] + pageMemoryOffset;
 }
