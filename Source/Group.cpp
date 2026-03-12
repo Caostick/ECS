@@ -98,6 +98,8 @@ auto ecs::Group::GetEntityBackReference(uint32_t localIndex) -> EntityHandle {
 }
 
 auto ecs::Group::GetComponentData(uint32_t localIndex, ComponentTypeId componentTypeId) -> uint8_t* {
+	ECSAssert(localIndex < m_EntityCount, "Entity index is out of range!");
+
 #if USE_ARRAY_OF_STRUCTURES_STORAGE
 	const auto pageIndex = localIndex / EntitiesPerGroupDataPage;
 	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
@@ -107,6 +109,7 @@ auto ecs::Group::GetComponentData(uint32_t localIndex, ComponentTypeId component
 
 	return m_DataPages[pageIndex] + entityOffset + componentOffset;
 #else
+
 	const auto pageIndex = localIndex / EntitiesPerGroupDataPage;
 	const auto pageLocalIndex = localIndex % EntitiesPerGroupDataPage;
 
