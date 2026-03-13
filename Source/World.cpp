@@ -273,34 +273,49 @@ void ecs::World::TryCacheGroup(QueryCache& queryCache, Group* group) {
 	queryCache.m_Groups.push_back(group);
 }
 
+void ecs::World::RemoveEntityFromGroup(Group& group, Entity& entity, uint32_t newGroupIndex, uint32_t newLocalIndex) {
+	ECSAssert(&group == m_Groups[entity.m_GroupIndex], "Group missmatch!");
+
+	const auto swapEntityHandle = group.GetLastEntity();
+
+	const auto swapThreadIdx = ToThreadIndex(swapEntityHandle);
+	const auto swapEntityIdx = ToEntityIndex(swapEntityHandle);
+	const auto& swapLayout = m_TLS[swapThreadIdx].GetEntityLayout(swapEntityIdx);
+	auto& swapEntity = m_TLS[swapThreadIdx].GetEntity(swapEntityIdx);
+
+	group.RemoveEntity(entity.m_LocalIndex, swapLayout.m_State.m_BitsJustAttached);
+
+	swapEntity.m_LocalIndex = entity.m_LocalIndex;
+
+	entity.m_GroupIndex = newGroupIndex;
+	entity.m_LocalIndex = newLocalIndex;
+
+	ECSAssert(swapEntityHandle == GetEntityBackreference(swapEntityHandle), "Invalid entity backreference");
+}
+
 void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 	const auto threadIdx = ToThreadIndex(entityHandle);
 	const auto entityIdx = ToEntityIndex(entityHandle);
 
 	auto& tls = m_TLS[threadIdx];
 	auto& layout = tls.GetEntityLayout(entityIdx);
+	auto& entity = tls.GetEntity(entityIdx);
 
 	if (layout.m_State.m_Bits == EmptyEntityLayout) {
 		// If OLD layout is empty
 
-		auto group = GetGroup(layout.m_RequiredBits);
-		const auto localIndex = group->AddEntity(entityHandle);
+		auto& newGroup = GetGroup(layout.m_RequiredBits);
+		const auto newLocalIndex = newGroup.AddEntity(entityHandle);
 
-		auto& entity = tls.GetEntity(entityIdx);
-		entity.m_GroupIndex = group->GetIndex();
-		entity.m_LocalIndex = localIndex;
-
-		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
+		entity.m_GroupIndex = newGroup.GetIndex();
+		entity.m_LocalIndex = newLocalIndex;
 
 	} else if (layout.m_RequiredBits == EmptyEntityLayout) {
 		// If NEW layout is empty
 
 		const auto groupIndex = tls.GetEntityGroupIndex(entityIdx);
-		const auto localIndex = tls.GetEntityLocalIndex(entityIdx);
 
-		auto group = m_Groups[groupIndex];
-
-		auto& entity = tls.GetEntity(entityIdx);
+		auto& group = *m_Groups[groupIndex];
 
 		// Fix entity what has been changed within group
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
@@ -309,74 +324,47 @@ void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 		const Bitset removedLayout = layout.m_State.m_Bits;
 		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (removedLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				uint8_t* compPtr = group.GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
 				ComponentInfo::s_DestructComponentFunc[ComponentTypeId(i)](compPtr);
 			}
 		}
 
-		const auto entityHandleToFix = group->RemoveEntity(localIndex);
-		if (entityHandle != entityHandleToFix) {
-			const auto threadIdxToFix = ToThreadIndex(entityHandleToFix);
-			const auto entityIdxToFix = ToEntityIndex(entityHandleToFix);
-			auto& entityToFix = m_TLS[threadIdxToFix].GetEntity(entityIdxToFix);
-			entityToFix.m_LocalIndex = localIndex;
-		}
-
-		entity.m_GroupIndex = 0;
-		entity.m_LocalIndex = 0;
-
-		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
-		ECSAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
+		RemoveEntityFromGroup(group, entity, 0, 0);
 
 	} else {
 		// If both layouts exist
 
 		// Get current group
-		auto& entity = tls.GetEntity(entityIdx);
-		auto group = m_Groups[entity.m_GroupIndex];
+		auto& group = *m_Groups[entity.m_GroupIndex];
 
 		// Create new group
-		auto newGroup = GetGroup(layout.m_RequiredBits);
-		const auto newLocalEntityIndex = newGroup->AddEntity(entityHandle);
+		auto& newGroup = GetGroup(layout.m_RequiredBits);
+		const auto newLocalIndex = newGroup.AddEntity(entityHandle);
 
 		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 		
-		const Bitset mergedLayout = layout.m_RequiredBits & layout.m_State.m_Bits;
 		const Bitset newLayout = layout.m_RequiredBits;
 		const Bitset oldLayout = layout.m_State.m_Bits;
+		const Bitset mergedLayout = newLayout & oldLayout;
 
 		// Move components from current group to new one
 		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
 			if (mergedLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
-				uint8_t* newCompPtr = newGroup->GetComponentData(newLocalEntityIndex, ComponentTypeId(i));
+				uint8_t* compPtr = group.GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				uint8_t* newCompPtr = newGroup.GetComponentData(newLocalIndex, ComponentTypeId(i));
 
 				ComponentInfo::s_MoveComponentFunc[ComponentTypeId(i)](newCompPtr, compPtr);
 			} else if(oldLayout[i]) {
-				uint8_t* compPtr = group->GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
+				uint8_t* compPtr = group.GetComponentData(entity.m_LocalIndex, ComponentTypeId(i));
 				ComponentInfo::s_DestructComponentFunc[ComponentTypeId(i)](compPtr);
 			}
 		}
 
-		// @TODO: Make backreference check for each entity and store last operation
+		RemoveEntityFromGroup(group, entity, newGroup.GetIndex(), newLocalIndex);
 
-		// Fix entity what has been changed within group
-		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
-
-		const auto entityHandleToFix = group->RemoveEntity(entity.m_LocalIndex);
-		if (entityHandle != entityHandleToFix) {
-			const auto threadIdxToFix = ToThreadIndex(entityHandleToFix);
-			const auto entityIdxToFix = ToEntityIndex(entityHandleToFix);
-			auto& entityToFix = m_TLS[threadIdxToFix].GetEntity(entityIdxToFix);
-			entityToFix.m_LocalIndex = entity.m_LocalIndex;
-		}
-
-		entity.m_GroupIndex = newGroup->GetIndex();
-		entity.m_LocalIndex = newLocalEntityIndex;
-
-		ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
-		ECSAssert(entityHandleToFix == GetEntityBackreference(entityHandleToFix), "Invalid entity backreference");
 	}
+
+	ECSAssert(entityHandle == GetEntityBackreference(entityHandle), "Invalid entity backreference");
 
 	if (!m_TLS[threadIdx].IsMarkedForUpdate(entityIdx)) {
 		m_TLS[threadIdx].MarkForUpdate(entityIdx, true);
@@ -386,10 +374,11 @@ void ecs::World::ExecuteChangeEntityLayout(EntityHandle entityHandle) {
 	layout.m_State.m_Bits = layout.m_RequiredBits;
 }
 
-auto ecs::World::GetGroup(const Bitset& typeBitmask) -> Group* {
+auto ecs::World::GetGroup(const Bitset& typeBitmask) -> Group& {
+	// @TODO: Add map bitset->index for O(1) search instead O(N)
 	for (auto group : m_Groups) {
 		if (group->GetTypeBits() == typeBitmask) {
-			return group;
+			return *group;
 		}
 	}
 
@@ -405,5 +394,5 @@ auto ecs::World::GetGroup(const Bitset& typeBitmask) -> Group* {
 		TryCacheGroup(queryCache, group);
 	}
 
-	return group;
+	return *group;
 }

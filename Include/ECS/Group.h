@@ -15,7 +15,8 @@ namespace ecs {
 		auto GetTypeBits() const -> const Bitset&;
 
 		auto AddEntity(EntityHandle entity) -> uint32_t;
-		auto RemoveEntity(uint32_t localIndex) -> EntityHandle;
+		auto GetLastEntity() const -> EntityHandle;
+		auto RemoveEntity(uint32_t localIndex, const Bitset& coponentsIgnoreToMove) -> EntityHandle;
 		auto GetEntityBackReference(uint32_t localIndex) -> EntityHandle;
 
 		auto GetComponentData(uint32_t localIndex, ComponentTypeId componentTypeId) -> uint8_t*;

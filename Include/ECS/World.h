@@ -81,9 +81,10 @@ namespace ecs {
 		static void UpdateSystem(World& world, System& system, float deltaTime);
 
 	private:
+		void RemoveEntityFromGroup(Group& group, Entity& entity, uint32_t newGroupIndex, uint32_t newLocalIndex);
 		void ExecuteChangeEntityLayout(EntityHandle entityHandle);
 
-		auto GetGroup(const Bitset& typeBitmask) -> Group*;
+		auto GetGroup(const Bitset& typeBitmask) -> Group&;
 		auto GetQueryCache(uint32_t id) -> QueryCache&;
 		void InitQueryCache(QueryCache& queryCache);
 		void TryCacheGroup(QueryCache& queryCache, Group* group);

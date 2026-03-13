@@ -65,13 +65,19 @@ auto ecs::Group::AddEntity(ecs::EntityHandle entity) -> uint32_t {
 	return m_EntityCount++;
 }
 
-auto ecs::Group::RemoveEntity(uint32_t localIndex) -> EntityHandle {
+auto ecs::Group::GetLastEntity() const -> EntityHandle {
+	ECSAssert(m_EntityCount > 0, "Group is empty to get last entity handle!");
+
+	return m_EntityBackRefs[m_EntityCount - 1];
+}
+
+auto ecs::Group::RemoveEntity(uint32_t localIndex, const Bitset& coponentsIgnoreToMove) -> EntityHandle {
 	const auto lastEntIndex = m_EntityCount - 1;
 
 	EntityHandle changedEntity = m_EntityBackRefs[lastEntIndex];
 	if (localIndex != lastEntIndex) {
 		for (uint32_t i = 0; i < MaxComponentCount; ++i) {
-			if(m_EntityTypeBits[i]) {
+			if(m_EntityTypeBits[i] && !coponentsIgnoreToMove[i]) {
 				uint8_t* compPtr = GetComponentData(lastEntIndex, ComponentTypeId(i));
 				uint8_t* remCompPtr = GetComponentData(localIndex, ComponentTypeId(i));
 
